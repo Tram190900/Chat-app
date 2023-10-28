@@ -1,31 +1,9 @@
 .ChatContainer {
   display: flex;
-  margin: 20px;
-  .menuWrap {
-    background-color: #009ffb;
-    max-height: 95vh;
-    width: 5vw;
-    box-shadow: inset -5px 0px 10px rgb(128, 124, 124);
-    border-radius: 47px;
-    padding-top: 1.5rem;
-    text-align: center;
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    h4 {
-      font-weight: bold;
-    }
-    .menuCenter {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      height: 75vh;
-    }
-  }
+  height: 100%;
+  font-size: 18px;
   .listWrap {
     height: 95vh;
-    width: 25vw;
     border-right: 2px solid rgb(174, 174, 174, 0.3);
     .userWrap {
       display: flex;
@@ -62,14 +40,39 @@
     }
   }
   .chatWrap {
-    width: 70vw;
+    height: 100%;
     .userReceiverWrap {
-      height: 7vh;
+      height: 10%;
       border-bottom: 2px solid rgb(174, 174, 174, 0.3);
     }
     .chatContent {
       width: 100%;
-      height: 88vh;
+      height: 90%;
+      padding: 20px 20px 0 20px;
+      position: relative;
+      .chatGroup{
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .inputGroup{
+        position: absolute;
+        bottom: 10px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        background-color: rgb(174, 174, 174, 0.2);
+        height: 55px;
+        border-radius: 30px;
+        padding: 0 20px;
+        input{
+          width: 100%;
+          border: none;
+          outline: none;
+          background: none !important;
+        }
+      }
     }
   }
 }
@@ -80,9 +83,10 @@
   border: none;
   border-bottom: 1px solid rgb(174, 174, 174, 0.3);
   border-radius: none;
-  margin-left: 20px;
+  padding-left: 10px;
   justify-content: center;
   align-items: center;
+  cursor: pointer;
   .cardImage {
     width: 70px;
     height: 70px;
@@ -105,6 +109,70 @@
         -webkit-line-clamp: 1; /* Số dòng tối đa */
         -webkit-box-orient: vertical;
         color: rgb(174, 174, 174);
+        font-size: 15px;
     }
+  }
+}
+.cardWrap:hover{
+  background-color: rgb(174, 174, 174, 0.3);
+}
+.cardReciverWrap{
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  border: none;
+  align-items: center;
+  padding-left: 20px;
+  .cardImage{
+    width: 70px;
+    height: 70px;
+    border-radius: 40px;
+    background-color: pink;
+  }
+  .cardBody{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    .mediaWrap{
+    }
+  }
+}
+.sendWrap{
+  display: flex;
+  justify-content: end;
+  p{
+    background-color: #009ffb ;
+    width: fit-content;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    padding: 5px 15px;
+    text-align: left;
+    color: white;
+    max-width: 40%;
+    word-wrap: break-word;
+  }
+}
+.reciverWrap{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: fit-content;
+  img{
+    width: 40px;
+    height: 40px;
+    background-color: #009ffb;
+    border-radius: 30px;
+    margin-right: 20px;
+  }
+  p{
+    background-color: rgb(174, 174, 174, 0.3) ;
+    width: fit-content;
+    border-radius: 20px;
+    margin-bottom: 10px;
+    padding: 5px 15px;
+    text-align: left;
+    color: black;
+    max-width: 40%;
+    word-wrap: break-word;
   }
 }

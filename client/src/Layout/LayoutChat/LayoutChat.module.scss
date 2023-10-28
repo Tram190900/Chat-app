@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  padding: 20px;
+  width: 100% !important;
+  height: 100% !important;
+  .menuWrap {
+    background-color: #009ffb;
+    max-height: 95vh;
+    width: 5vw;
+    box-shadow: inset -5px 0px 10px rgb(128, 124, 124);
+    border-radius: 47px;
+    padding-top: 1.5rem;
+    text-align: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    h4 {
+      font-weight: bold;
+    }
+    .menuCenter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 75vh;
+      .chatDots{
+        cursor: pointer;
+      }
+      .peopleAlt{
+        cursor: pointer;
+      }
+      .chatDots.active {
+        color: black;
+      }
+      .peopleAlt.active {
+        color: black;
+      }
+    }
+  }
+}
