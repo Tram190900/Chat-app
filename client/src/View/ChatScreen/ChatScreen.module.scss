@@ -1,2 +1,110 @@
-.ChatContainer{
+.ChatContainer {
+  display: flex;
+  margin: 20px;
+  .menuWrap {
+    background-color: #009ffb;
+    max-height: 95vh;
+    width: 5vw;
+    box-shadow: inset -5px 0px 10px rgb(128, 124, 124);
+    border-radius: 47px;
+    padding-top: 1.5rem;
+    text-align: center;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    h4 {
+      font-weight: bold;
+    }
+    .menuCenter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 75vh;
+    }
+  }
+  .listWrap {
+    height: 95vh;
+    width: 25vw;
+    border-right: 2px solid rgb(174, 174, 174, 0.3);
+    .userWrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem 0;
+      height: 40vh;
+      .imageWrap {
+        width: 150px;
+        background-color: red;
+        margin-bottom: 1.5rem;
+      }
+      p {
+        font-size: 20px;
+        font-weight: bold;
+      }
+      InputGroup {
+        width: 90%;
+      }
+    }
+    .lstFriendWrap {
+        overflow-x: auto;
+        height: 55vh;
+    }
+    .lstFriendWrap::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .lstFriendWrap::-webkit-scrollbar-thumb {
+        border-radius: 5px;
+        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+        background: rgba(0, 0, 0, 0.2);
+    }
+  }
+  .chatWrap {
+    width: 70vw;
+    .userReceiverWrap {
+      height: 7vh;
+      border-bottom: 2px solid rgb(174, 174, 174, 0.3);
+    }
+    .chatContent {
+      width: 100%;
+      height: 88vh;
+    }
+  }
+}
+.cardWrap {
+  display: flex;
+  flex-direction: row;
+  height: 100px;
+  border: none;
+  border-bottom: 1px solid rgb(174, 174, 174, 0.3);
+  border-radius: none;
+  margin-left: 20px;
+  justify-content: center;
+  align-items: center;
+  .cardImage {
+    width: 70px;
+    height: 70px;
+    border-radius: 40px;
+    background-color: pink;
+  }
+  .cardBody {
+    display: flex;
+    flex-direction: column;
+    font-weight: 500;
+    .cardTitle{
+        display: flex;
+        justify-content: space-between;
+        font-size: 18px;
+    }
+    .shortMessage{
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 1; /* Số dòng tối đa */
+        -webkit-box-orient: vertical;
+        color: rgb(174, 174, 174);
+    }
+  }
 }
