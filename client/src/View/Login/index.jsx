@@ -4,11 +4,13 @@ import { Button, Card, Form } from "react-bootstrap";
 import { FcGoogle } from "react-icons/fc";
 import { BsFacebook } from "react-icons/bs";
 import { useNavigate } from "react-router-dom";
-import { baseUrlApi, postRequest } from "../../Utils/services";
+import { baseUrlApi, postRequest } from "../../api/userAPI";
 import { useContext, useState } from "react";
 import ModalErr from "../Modals/ModalErr";
 import {useDispatch} from 'react-redux'
 import { UserContext } from "../../Context/userContext";
+import { getUser } from "../../features/User/userSlice";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -16,6 +18,7 @@ const Login = () => {
   const [openModal, setOpenModal] = useState(false);
   const [messageErr, setMessageErr] = useState("");
   const userContext = useContext(UserContext)
+  const dispatch = useDispatch()
 
   const navigate = useNavigate();
   const handleLogin = async () => {
@@ -23,15 +26,17 @@ const Login = () => {
       email: email,
       password: password,
     };
-    await postRequest(`${baseUrlApi}/user/login`, data, res => {
-      if (res.status === 400) {
-        openModal(true);
-        setMessageErr(res.data);
-      } else {
-        userContext.setUser(res)
-        navigate("/chat-app/chat");
-      }
-    });
+    try {
+      const actionResult = await dispatch(
+        getUser({param1: `${baseUrlApi}/user/login`, param2: data})
+      )
+      const currentUser = unwrapResult(actionResult)
+      localStorage.setItem('user', currentUser)
+      navigate('/chat-app/chat')
+    } catch (error) {
+      setOpenModal(true)
+      setMessageErr(error.message)
+    }
   };
   return (
     <>

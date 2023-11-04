@@ -1,16 +1,20 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
-import { UserContectProvider } from './Context/userContext';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./index.css";
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+import { UserContectProvider } from "./Context/userContext";
+import { Provider } from "react-redux";
+import store from './app/store'
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <UserContectProvider>
-      <App />
-    </UserContectProvider>
+    <Provider store={store}>
+      <UserContectProvider>
+        <App />
+      </UserContectProvider>
+    </Provider>
   </React.StrictMode>
 );
 

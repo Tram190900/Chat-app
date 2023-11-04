@@ -10,6 +10,7 @@ import {
 import { Card, Form, Image, InputGroup } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../Context/userContext";
+import { useSelector } from "react-redux";
 
 const CardPeople = ({ name, filterParam }) => {
   const [filter, setFilter] = filterParam;
@@ -86,6 +87,7 @@ const ChatScreen = () => {
   });
   const [txtInput, setTxtInput] = useState("");
   const userContext = useContext(UserContext)
+  const [userName, setUserName] = useState('')
   
   const [contentChat, setContentChat] = useState([
     { flat: "s", content: "sdfsfsdfsa" },
@@ -93,6 +95,10 @@ const ChatScreen = () => {
     {flat:'r', content:'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'},
     {flat:'s',content:'ttttttttt'}
   ]);
+
+  useEffect(()=>{
+    setUserName(JSON.parse(localStorage.getItem('user')).name)
+  },[])
 
 
   return (
@@ -104,7 +110,7 @@ const ChatScreen = () => {
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png"
             roundedCircle
           />
-          <p>{userContext.user.name}</p>
+          <p>{userName}</p>
           <InputGroup style={{ width: "90%" }}>
             <Form.Control
               style={{ background: "rgb(174, 174, 174, 0.2)" }}

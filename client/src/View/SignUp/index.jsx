@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React, { Component, useEffect, useState } from "react";
 import Style from "./SignUp.module.scss";
 import { Button, Card, Form } from "react-bootstrap";
-import { baseUrlApi, postRequest } from "../../Utils/services";
+import { baseUrlApi, postRequest } from "../../api/userAPI";
 import { useNavigate } from "react-router-dom";
 import ModalErr from "../Modals/ModalErr";
 import { PiArrowLeftBold } from "react-icons/pi";
