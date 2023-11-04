@@ -5,10 +5,10 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
 }
 #root{
   min-height: 100%;
+  font-size: 18px;
 }
 
 code {

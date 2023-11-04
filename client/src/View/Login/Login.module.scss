@@ -4,10 +4,10 @@
     align-items: center;
     height: 100vh;
     background-image: url('../../../public/bg.jpg');
-  background-position: 'center';
-  background-repeat: 'no-repeat';
+     background-position: 'center';
+    background-repeat: 'no-repeat';
     .cardContainer{
-        width: 25vw;
+        width: 25%;
         background: rgba(255, 255, 255, 0.5);
         .cardHeader{
             background-color: #5871ff;
@@ -25,7 +25,7 @@
             .cardText{
                 h2{
                     text-align: center;
-                    font-weight: 380;
+                    font-weight: 470;
                     margin: 20px 0;
                 }
                 Form{
@@ -51,7 +51,15 @@
             }
         }
         .cardFooter{
-            padding: 5% 12% 0;
+            padding: 3% 12% 0;
+            .SignUp{
+                text-align: center;
+                font-weight: bold;
+                cursor: pointer;
+            }
+            .SignUp:hover{
+                color: rgba(255, 255, 255, 1);;
+            }
             .btnGoogle{
                 background: rgba(255, 255, 255, 0.7);
                 border: none;

@@ -8,7 +8,8 @@ import {
   MdSend,
 } from "react-icons/md";
 import { Card, Form, Image, InputGroup } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "../../Context/userContext";
 
 const CardPeople = ({ name, filterParam }) => {
   const [filter, setFilter] = filterParam;
@@ -77,18 +78,22 @@ const ContentReciver = ({ item, filterParam }) => {
   );
 };
 
+
 const ChatScreen = () => {
   const [filter, setFilter] = useState({
     ftNameReciver: "1",
     ftImageReciver: "",
   });
   const [txtInput, setTxtInput] = useState("");
+  const userContext = useContext(UserContext)
+  
   const [contentChat, setContentChat] = useState([
     { flat: "s", content: "sdfsfsdfsa" },
     { flat: "s", content: "ertetwrdf ffffffffffffffffffffff fffffffffff ffffffffffffff fffffffffff fffffdfsdf sf sfs " },
     {flat:'r', content:'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'},
     {flat:'s',content:'ttttttttt'}
   ]);
+
 
   return (
     <div className={clsx(Style.ChatContainer, "container-fluid")}>
@@ -99,7 +104,7 @@ const ChatScreen = () => {
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png"
             roundedCircle
           />
-          <p>User name</p>
+          <p>{userContext.user.name}</p>
           <InputGroup style={{ width: "90%" }}>
             <Form.Control
               style={{ background: "rgb(174, 174, 174, 0.2)" }}

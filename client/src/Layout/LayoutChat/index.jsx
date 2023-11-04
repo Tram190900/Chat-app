@@ -1,15 +1,22 @@
 import clsx from "clsx";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import Style from './LayoutChat.module.scss'
 import { BsSnapchat, BsChatDots } from "react-icons/bs";
 import { MdOutlinePeopleAlt, MdLogout } from "react-icons/md";
+import { UserContext } from "../../Context/userContext";
 
 export default function LayoutChat() {
   const location = useLocation()
 const navigate = useNavigate()
+const userContext = useContext(UserContext)
 
   const [active, setActiveItem] = useState(-1)
+
+  const handleLogOut=()=>{
+    userContext.setUser({})
+    navigate('/chat-app/login')
+  }
 
   useEffect(()=>{
     const pathName = location.pathname
@@ -27,7 +34,7 @@ const navigate = useNavigate()
           <MdOutlinePeopleAlt size={35} className={clsx(Style.peopleAlt,'mt-4', active===1? Style.active:'')} onClick={()=>{navigate('/chat-app/chat/list-friend')}}/>
         </div>
         <div className="mb-4">
-          <MdLogout size={35} />
+          <MdLogout size={35} style={{cursor:"pointer"}} onClick={()=>handleLogOut()}/>
         </div>
       </div>
       <div className="col-lg-11 col-sm-6">
