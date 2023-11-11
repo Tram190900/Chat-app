@@ -14,7 +14,8 @@ const userContext = useContext(UserContext)
   const [active, setActiveItem] = useState(-1)
 
   const handleLogOut=()=>{
-    userContext.setUser({})
+    // userContext.setUser({})
+    localStorage.removeItem('user')
     navigate('/chat-app/login')
   }
 

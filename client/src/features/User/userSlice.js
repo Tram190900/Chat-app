@@ -1,11 +1,11 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { postRequest } from "../../api/userAPI";
+import { postUserRequest } from "../../api/userAPI";
 
 export const getUser = createAsyncThunk(
   "user/getUser",
   async (params, thunkAPI) => {
     try {
-      const currentUser = await postRequest(params.param1, params.param2);
+      const currentUser = await postUserRequest(params.param1, params.param2);
       return currentUser.data
     } catch (error) {
       throw error.response.data
@@ -26,19 +26,20 @@ const userSlice = createSlice({
     error: "",
   },
   reducers: {},
-  extraReducers: {
-    [getUser.pending]: (state) => {
+  extraReducers: (builder)=>{
+    builder
+    .addCase(getUser.pending, (state) => {
       state.loading = true;
-    },
-    [getUser.rejected]: (state, action) => {
+    })
+    .addCase(getUser.rejected, (state, action) => {
       state.loading = false;
       state.error = action.error;
-    },
-    [getUser.fulfilled]: (state, action) => {
+    })
+    .addCase(getUser.fulfilled, (state, action) => {
       state.loading = false;
       state.current = action.payload;
-    },
-  },
+    });
+  }
 });
 
 const { actions, reducer } = userSlice;

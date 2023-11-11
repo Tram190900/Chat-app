@@ -10,13 +10,26 @@ import {
 import { Card, Form, Image, InputGroup } from "react-bootstrap";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../Context/userContext";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { getChat } from "../../features/Chat/chatSlice";
+import { baseUrlApi, getUserRequest } from "../../api/userAPI";
+import { unwrapResult } from "@reduxjs/toolkit";
 
-const CardPeople = ({ name, filterParam }) => {
+const CardPeople = ({ filterParam, user, chat }) => {
   const [filter, setFilter] = filterParam;
+  const [userReceiver, setUserReciver] = useState({})
   const handleSelected = () => {
-    setFilter({ ...filter, ftNameReciver: name });
+    setFilter({ ...filter, ftNameReciver: userReceiver.name });
   };
+  useEffect(()=>{
+    const userRevicerId = chat.members.find((id)=>(id!==user._id))
+    getUserRequest(`${baseUrlApi}/user/find/${userRevicerId}`).then((result) => {
+      setUserReciver(result.data)
+    }).catch((err) => {
+      console.log(err);
+    });
+  },[])
+
   return (
     <Card
       className={clsx(Style.cardWrap)}
@@ -30,7 +43,7 @@ const CardPeople = ({ name, filterParam }) => {
       />
       <Card.Body className={clsx(Style.cardBody)}>
         <Card.Title className={clsx(Style.cardTitle)}>
-          <p>{name}</p>
+          <p>{userReceiver.name}</p>
           <p>Time</p>
         </Card.Title>
         <Card.Text className={clsx(Style.shortMessage)}>
@@ -80,14 +93,17 @@ const ContentReciver = ({ item, filterParam }) => {
 };
 
 
+
+
 const ChatScreen = () => {
   const [filter, setFilter] = useState({
     ftNameReciver: "1",
     ftImageReciver: "",
   });
   const [txtInput, setTxtInput] = useState("");
-  const userContext = useContext(UserContext)
-  const [userName, setUserName] = useState('')
+  const [user, setUser] = useState({})
+  const dispatch = useDispatch()
+  const listChat = useSelector(state => state.chat)
   
   const [contentChat, setContentChat] = useState([
     { flat: "s", content: "sdfsfsdfsa" },
@@ -96,8 +112,20 @@ const ChatScreen = () => {
     {flat:'s',content:'ttttttttt'}
   ]);
 
+  const handleGetChat = async(userId)=>{
+    try {
+      await dispatch(
+        getChat(`${baseUrlApi}/chat/${userId}`)
+      )
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(()=>{
-    setUserName(JSON.parse(localStorage.getItem('user')).name)
+    const rs = JSON.parse(localStorage.getItem('user'))
+    setUser(rs)
+    handleGetChat(rs._id)
   },[])
 
 
@@ -110,7 +138,7 @@ const ChatScreen = () => {
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png"
             roundedCircle
           />
-          <p>{userName}</p>
+          <p>{user.name}</p>
           <InputGroup style={{ width: "90%" }}>
             <Form.Control
               style={{ background: "rgb(174, 174, 174, 0.2)" }}
@@ -124,14 +152,11 @@ const ChatScreen = () => {
           </InputGroup>
         </div>
         <div className={clsx(Style.lstFriendWrap)}>
-          <CardPeople name={"1"} filterParam={[filter, setFilter]} />
-          <CardPeople name={"2"} filterParam={[filter, setFilter]} />
-          <CardPeople name={"3"} filterParam={[filter, setFilter]} />
-          <CardPeople name={"4"} filterParam={[filter, setFilter]} />
-          <CardPeople name={"5"} filterParam={[filter, setFilter]} />
-          <CardPeople name={"6"} filterParam={[filter, setFilter]} />
-          <CardPeople name={"7"} filterParam={[filter, setFilter]} />
-          <CardPeople name={"8"} filterParam={[filter, setFilter]} />
+        {
+          listChat.current && listChat.current.length > 0 ? listChat.current.map((item, index)=>(
+            <CardPeople key={index} user={user} chat={item} filterParam={[filter, setFilter]}/>
+          )):null
+        }
         </div>
       </div>
       <div className={clsx(Style.chatWrap, "col-lg-9 col-sm-12")}>

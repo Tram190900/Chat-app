@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React, { Component, useEffect, useState } from "react";
 import Style from "./SignUp.module.scss";
 import { Button, Card, Form } from "react-bootstrap";
-import { baseUrlApi, postRequest } from "../../api/userAPI";
+import { baseUrlApi, postUserRequest } from "../../api/userAPI";
 import { useNavigate } from "react-router-dom";
 import ModalErr from "../Modals/ModalErr";
 import { PiArrowLeftBold } from "react-icons/pi";
@@ -21,14 +21,24 @@ export default function SignUp() {
       email: email,
       password: password,
     };
-    await postRequest(`${baseUrlApi}/user/register`, data, (res) => {
-      if (res.status === 400) {
-        setOpenModal(true);
-        setMessageErr(res.data);
-      } else {
-        navigate("/chat-app/login");
-      }
-    });
+    try {
+      await postUserRequest(`${baseUrlApi}/user/register`,data)
+      navigate('/chat-app/login')
+    } catch (error) {
+      setMessageErr(error.response.data)
+      setOpenModal(true)
+    }
+    // await postRequest(`${baseUrlApi}/user/register`,data)
+    // .then((result) => {
+    //   if(result.status===400){
+    //     setMessageErr(result.data)
+    //     setOpenModal(true)
+    //   }else{
+    //     navigate('/chat-app/login')
+    //   }
+    // }).catch((err) => {
+    //   console.log(err);
+    // });;
   };
   return (
     <>
@@ -46,7 +56,7 @@ export default function SignUp() {
           <Card.Body className={clsx(Style.cardBody)}>
             <Card.Text className={clsx(Style.cardText)}>
               <h2>Register</h2>
-              <Form>
+              <Form results={false}>
                 <Form.Control
                   placeholder="Username"
                   type="text"

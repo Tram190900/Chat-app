@@ -5,6 +5,7 @@ const userModel = new Schema({
   name: { type: String, required: true, minlenght: 3, maxlenght: 50 },
   email: {type: String, required: true, minlenght:3, maxlenght:100, unique: true},
   password: {type: String, required: true, minlenght:3, maxlenght:100},
+  avatar: {type:String, require:true, maxlenght:200}
 },
 {
     timestamps:true

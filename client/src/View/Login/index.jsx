@@ -31,7 +31,7 @@ const Login = () => {
         getUser({param1: `${baseUrlApi}/user/login`, param2: data})
       )
       const currentUser = unwrapResult(actionResult)
-      localStorage.setItem('user', currentUser)
+      localStorage.setItem('user', JSON.stringify(currentUser))
       navigate('/chat-app/chat')
     } catch (error) {
       setOpenModal(true)
