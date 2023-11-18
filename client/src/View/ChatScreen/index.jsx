@@ -19,7 +19,7 @@ const CardPeople = ({ filterParam, user, chat }) => {
   const [filter, setFilter] = filterParam;
   const [userReceiver, setUserReciver] = useState({})
   const handleSelected = () => {
-    setFilter({ ...filter, ftNameReciver: userReceiver.name });
+    setFilter({ ...filter, ftNameRecipient: userReceiver.name });
   };
   useEffect(()=>{
     const userRevicerId = chat.members.find((id)=>(id!==user._id))
@@ -55,7 +55,7 @@ const CardPeople = ({ filterParam, user, chat }) => {
   );
 };
 
-const CardReciver = ({ filterParam }) => {
+const CardRecipient = ({ filterParam }) => {
   const [filter, setFilter] = filterParam;
   return (
     <Card className={clsx(Style.cardReciverWrap)}>
@@ -65,7 +65,7 @@ const CardReciver = ({ filterParam }) => {
         src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png"
       />
       <Card.Body className={clsx(Style.cardBody)}>
-        <Card.Title>{filter.ftNameReciver}</Card.Title>
+        <Card.Title>{filter.ftNameRecipient}</Card.Title>
         <div className={clsx(Style.mediaWrap)}>
           <MdLocalPhone size={35} style={{ marginRight: "20px" }} />
           <MdOutlineVideoCameraFront size={35} />
@@ -83,7 +83,7 @@ const ContentSend = ({ item }) => {
   );
 };
 
-const ContentReciver = ({ item, filterParam }) => {
+const ContentRecipient = ({ item, filterParam }) => {
   return (
     <div className={clsx(Style.reciverWrap)}>
       <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png"/>
@@ -97,8 +97,8 @@ const ContentReciver = ({ item, filterParam }) => {
 
 const ChatScreen = () => {
   const [filter, setFilter] = useState({
-    ftNameReciver: "1",
-    ftImageReciver: "",
+    ftNameRecipient: "1",
+    ftImageRecipient: "",
   });
   const [txtInput, setTxtInput] = useState("");
   const [user, setUser] = useState({})
@@ -130,7 +130,7 @@ const ChatScreen = () => {
 
 
   return (
-    <div className={clsx(Style.ChatContainer, "container-fluid")}>
+    <div className={clsx(Style.ChatContainer, "container-fluid row")}>
       <div className={clsx(Style.listWrap, "col-lg-3 col-sm-0")}>
         <div className={clsx(Style.userWrap)}>
           <Image
@@ -161,7 +161,7 @@ const ChatScreen = () => {
       </div>
       <div className={clsx(Style.chatWrap, "col-lg-9 col-sm-12")}>
         <div className={clsx(Style.userReceiverWrap)}>
-          <CardReciver filterParam={[filter, setFilter]} />
+          <CardRecipient filterParam={[filter, setFilter]} />
         </div>
         <div className={clsx(Style.chatContent)}>
           <div className={clsx(Style.chatGroup)}>
@@ -173,7 +173,7 @@ const ChatScreen = () => {
                   )
                 }else if(item.flat==='r'){
                   return(
-                    <ContentReciver item={item.content}/>
+                    <ContentRecipient item={item.content}/>
                   )
                 }
               })

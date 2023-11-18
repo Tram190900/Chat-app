@@ -1,0 +1,51 @@
+.containerFriendScreen{
+    display: flex;
+      height: 100%;
+      font-size: 18px;
+      .listMethod{
+        border-right: 2px solid rgb(174, 174, 174, 0.3);
+        .btnListFriend, .btnFriendRequest{
+            width: 100% !important;
+            display: flex;
+            align-items: center;
+            font-weight: bold;
+            padding: 4%;
+            height: 8%;
+            cursor: pointer;
+        }
+        .btnListFriend:hover, .btnFriendRequest:hover{
+            background-color: rgb(174, 174, 174, 0.2);
+        }
+        .btnListFriend.action, .btnFriendRequest.action{
+            background-color: #009ffb2f;
+        }
+      }
+      .friendListWrap{
+        display: none;
+      }
+      .friendListWrap.action{
+        display: block;
+      }
+      .friendRequestWrap{
+        display: none;
+      }
+      .friendRequestWrap.action{
+        display: block;
+      }
+}
+.friendsWrap{
+    display: flex;
+    align-items: center;
+    font-weight: 500;
+    border-bottom: 2px solid rgb(174, 174, 174, 0.3);
+    padding: 2% 0;
+    cursor: pointer;
+    .imageFr{
+        width: 80px;
+        background-color: pink;
+        margin-right: 2%;
+    }
+}
+.friendsWrap:hover{
+    background-color: rgb(174, 174, 174, 0.2);
+}

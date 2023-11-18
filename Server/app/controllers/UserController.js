@@ -60,4 +60,15 @@ const findUser = async(req,res)=>{
   }
 }
 
-module.exports = { register, loginUser, findUser };
+const getFriends = async (req, res)=>{
+  const userId = req.params.userId
+  try {
+    let user = await userModel.findById(userId).populate('friends', '_id name')
+    res.status(200).json(user)
+  } catch (error) {
+    console.log(error);
+    res.status(500).json(error);
+  }
+}
+
+module.exports = { register, loginUser, findUser, getFriends };
