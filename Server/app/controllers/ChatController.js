@@ -48,4 +48,14 @@ const findChat = async (req,res)=>{
     }
 }
 
-module.exports = { createChat, findUserChats, findChat };
+const findChatById = async (req,res)=>{
+  const chatId = req.params.chatId
+  try {
+    const chat = await chatModel.findById(chatId)
+    res.status(200).json(chat)
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+module.exports = { createChat, findUserChats, findChat, findChatById };

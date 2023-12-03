@@ -2,24 +2,7 @@
     display: flex;
       height: 100%;
       font-size: 18px;
-      .listMethod{
-        border-right: 2px solid rgb(174, 174, 174, 0.3);
-        .btnListFriend, .btnFriendRequest{
-            width: 100% !important;
-            display: flex;
-            align-items: center;
-            font-weight: bold;
-            padding: 4%;
-            height: 8%;
-            cursor: pointer;
-        }
-        .btnListFriend:hover, .btnFriendRequest:hover{
-            background-color: rgb(174, 174, 174, 0.2);
-        }
-        .btnListFriend.action, .btnFriendRequest.action{
-            background-color: #009ffb2f;
-        }
-      }
+      
       .friendListWrap{
         display: none;
       }

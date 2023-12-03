@@ -1,16 +1,20 @@
-import React, { useEffect, useState, } from "react";
+import React, { useEffect, useState } from "react";
 import Style from "./FriendScreen.module.scss";
 import clsx from "clsx";
 import { MdOutlinePeopleAlt } from "react-icons/md";
 import { AiOutlineUserAdd } from "react-icons/ai";
 import { baseUrlApi, getUserRequest } from "./../../api/userAPI";
-import { postChatRequest } from './../../api/chatAPI'
+import { getChatRequest, postChatRequest } from "./../../api/chatAPI";
 import { Image } from "react-bootstrap";
-import { useNavigate} from 'react-router-dom'
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { selectActive } from "../../features/ActivePane/ActivePaneSlice";
+import { handleExitsChat } from "../../features/Chat/chatSlice";
 
 const FriendsList = () => {
   const [friends, setFriends] = useState([]);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("user"))._id;
@@ -23,26 +27,35 @@ const FriendsList = () => {
       });
   }, []);
 
-  const handleCreateChat=(id)=>{
+  const handleCreateChat = async (id) => {
     const userId = JSON.parse(localStorage.getItem("user"))._id;
-    const data={
-      firstId:userId,
-      secondId:id
-    }
-    postChatRequest(`${baseUrlApi}/chat`, data).then((result) => {
-      if(result.status===200){
-        navigate('/chat-app/chat')
+    const exitChat = await getChatRequest(
+      `${baseUrlApi}/chat/find/${userId}/${id}`
+    );
+    if (exitChat.data.length === 0) {
+      const data = {
+        firstId: userId,
+        secondId: id,
+      };
+      const create = await postChatRequest(`${baseUrlApi}/chat/`, data);
+      if (create.status === "200") {
+        dispatch(selectActive("chat"));
       }
-    }).catch((err) => {
-      
-    });
-  }
+    } else {
+      dispatch(handleExitsChat(exitChat.data))
+      dispatch(selectActive("chat"));
+    }
+  };
 
   return (
     <div>
       {friends && friends.length > 0
         ? friends.map((item, index) => (
-            <div key={index} className={clsx(Style.friendsWrap)} onClick={()=>handleCreateChat(item._id)}>
+            <div
+              key={index}
+              className={clsx(Style.friendsWrap)}
+              onClick={() => handleCreateChat(item._id)}
+            >
               <Image
                 className={clsx(Style.imageFr)}
                 roundedCircle
@@ -59,44 +72,14 @@ const FriendRequest = () => {
   return <p>Friend request</p>;
 };
 
-export default function FriendScreen() {
-  const ACTIVITY1 = "FriendsList";
-  const ACTIVITY2 = "FriendRequest";
-  const [selected, setSelected] = useState(ACTIVITY1);
-
-  const handleSelect = (activity) => {
-    setSelected(activity);
-  };
-
+export default function FriendScreen(props) {
   return (
-    <div className={clsx(Style.containerFriendScreen, "container-fluid row")}>
-      <div className={clsx(Style.listMethod, "col-lg-3 col-sm-0 pt-5")}>
-        <div
-          className={clsx(
-            Style.btnListFriend,
-            selected === ACTIVITY1 ? Style.action : ""
-          )}
-          onClick={() => handleSelect(ACTIVITY1)}
-        >
-          <MdOutlinePeopleAlt size={35} />
-          Friends List
-        </div>
-        <div
-          className={clsx(
-            Style.btnFriendRequest,
-            selected === ACTIVITY2 ? Style.action : ""
-          )}
-          onClick={() => handleSelect(ACTIVITY2)}
-        >
-          <AiOutlineUserAdd size={34} />
-          Friend request
-        </div>
-      </div>
-      <div className={clsx(Style.panelWrap, "col-lg-9 col-sm-12")}>
+    <div className={clsx(Style.containerFriendScreen, "container-fluid")}>
+      <div className={clsx(Style.panelWrap, "col-lg-12 col-sm-12")}>
         <div
           className={clsx(
             Style.friendListWrap,
-            selected === ACTIVITY1 ? Style.action : ""
+            props.active === "FriendsList" ? Style.action : ""
           )}
         >
           <FriendsList />
@@ -104,7 +87,7 @@ export default function FriendScreen() {
         <div
           className={clsx(
             Style.friendRequestWrap,
-            selected === ACTIVITY2 ? Style.action : ""
+            props.active === "FriendRequest" ? Style.action : ""
           )}
         >
           <FriendRequest />
