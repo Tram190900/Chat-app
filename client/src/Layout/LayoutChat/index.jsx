@@ -13,6 +13,8 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import ChatScreen from "../../View/ChatScreen/index";
 import FriendScreen from "./../../View/FriendScreen/index";
 import { selectActive } from "../../features/ActivePane/ActivePaneSlice";
+import { useFetchRecipientUser } from "../../utils/user";
+import { getMessage, updateCurrentMessage } from "../../features/Message/messageSlide";
 
 const PaneListChat = (props) => {
   const [user, setUser] = useState({});
@@ -62,30 +64,32 @@ const PaneListChat = (props) => {
   );
 };
 
-const CardPeople = ({chat,keyProps}) => {
-  const [userReceiver, setUserReciver] = useState({});
+const CardPeople =  ({chat,keyProps}) => {
+  const [userRecipient, setUserRecipient] = useState({})
   const dispatch = useDispatch();
   const selectedChat = useSelector(state=>state.chat.selectedChat)
-  const handleSelected = async (id) => {
-    try {
-      const rs = await dispatch(
-        handleSelectedChat(`${baseUrlApi}/chat/find/${id}`)
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const user = JSON.parse(localStorage.getItem('user'))
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("user"))._id;
     const userRevicerId = chat.members.find((id) => id !== userId);
     getUserRequest(`${baseUrlApi}/user/find/${userRevicerId}`)
       .then((result) => {
-        setUserReciver(result.data);
+        setUserRecipient(result.data);
       })
       .catch((err) => {
         console.log(err);
       });
   }, []);
+  const handleSelected = async (id) => {
+    try {
+      const rs = await dispatch(
+        handleSelectedChat(`${baseUrlApi}/chat/find/${id}`)
+      );
+      const message = await dispatch(getMessage(`${baseUrlApi}/message/${chat._id}`))
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <Card
@@ -100,7 +104,7 @@ const CardPeople = ({chat,keyProps}) => {
       />
       <Card.Body className={clsx(Style.cardBody)}>
         <Card.Title className={clsx(Style.cardTitle)}>
-          <p>{userReceiver.name}</p>
+          <p>{userRecipient.name}</p>
           <p>Time</p>
         </Card.Title>
         <Card.Text className={clsx(Style.shortMessage)}>

@@ -1,7 +1,7 @@
 //createMessage
 //getMessage
 
-const messageModel = require("../model/messageModel")
+const messageModel = require("../model/MessageModel")
 
 const createMessage = async(req, res)=>{
     const {chatId, senderId, text} = req.body
@@ -18,7 +18,7 @@ const createMessage = async(req, res)=>{
 
 }
 const getMessage = async(req, res)=>{
-    const chatId = req.params
+    const chatId = req.params.chatId
     try {
         const messages = await messageModel.find({chatId})
         res.status(200).json(messages)

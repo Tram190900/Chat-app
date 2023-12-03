@@ -2,9 +2,9 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const messageModel = new Schema({
-  chatId: String,
-  senderId: String,
-  text:String
+  chatId: {type: String},
+  senderId: {type: String},
+  text:{type: String}
 },
 {
     timestamps:true
