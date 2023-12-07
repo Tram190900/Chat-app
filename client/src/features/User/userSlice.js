@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { postUserRequest } from "../../api/userAPI";
+import {io} from 'socket.io-client'
 
 export const getUser = createAsyncThunk(
   "user/getUser",
@@ -23,9 +24,18 @@ const userSlice = createSlice({
       token: "",
     },
     loading: false,
+    socket:null,
     error: "",
   },
-  reducers: {},
+  reducers: {
+    handleSocket:(state)=>{
+      const newSocket = io("http://localhost:9000");
+      state.socket=newSocket
+      return()=>{
+        newSocket.disconnect()
+      }
+    }
+  },
   extraReducers: (builder)=>{
     builder
     .addCase(getUser.pending, (state) => {
@@ -43,4 +53,5 @@ const userSlice = createSlice({
 });
 
 const { actions, reducer } = userSlice;
+export const {handleSocket} = actions
 export default reducer;

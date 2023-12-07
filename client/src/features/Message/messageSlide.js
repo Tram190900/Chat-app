@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getMessageRequest } from "../../api/messageAPI";
+import { getMessageRequest, postMessageRequest } from "../../api/messageAPI";
 export const getMessage = createAsyncThunk(
   "message/getMessage",
   async (param) => {
@@ -11,6 +11,14 @@ export const getMessage = createAsyncThunk(
     }
   }
 );
+export const sendMessage = createAsyncThunk('message/sendMessage', async({url, data})=>{
+  try {
+    const newMessage = await postMessageRequest(url, data)
+    return newMessage.data
+  } catch (error) {
+    throw error
+  }
+})
 
 const messageSlide = createSlice({
   name: "message",
@@ -21,6 +29,9 @@ const messageSlide = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getMessage.fulfilled, (state, action) => {
       state.message = action.payload;
+    })
+    .addCase(sendMessage.fulfilled, (state, action)=>{
+      state.message = [...state.message, action.payload]
     });
   },
 });

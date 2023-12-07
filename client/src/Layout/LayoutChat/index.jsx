@@ -15,6 +15,7 @@ import FriendScreen from "./../../View/FriendScreen/index";
 import { selectActive } from "../../features/ActivePane/ActivePaneSlice";
 import { useFetchRecipientUser } from "../../utils/user";
 import { getMessage, updateCurrentMessage } from "../../features/Message/messageSlide";
+import { handleSocket } from "../../features/User/userSlice";
 
 const PaneListChat = (props) => {
   const [user, setUser] = useState({});
@@ -160,6 +161,19 @@ export default function LayoutChat() {
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const active = useSelector(state=>state.activePane.active)
+  const {user} = JSON.parse(localStorage.getItem('user'))
+
+  useEffect(()=>{
+    const getSocket=async()=>{
+      try {
+        await dispatch(handleSocket())
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    getSocket()
+  },[user])
+  
 
   const [activeFriend, setActiveFriend] = useState("FriendsList");
 
