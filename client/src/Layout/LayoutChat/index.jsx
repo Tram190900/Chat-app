@@ -13,9 +13,8 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import ChatScreen from "../../View/ChatScreen/index";
 import FriendScreen from "./../../View/FriendScreen/index";
 import { selectActive } from "../../features/ActivePane/ActivePaneSlice";
-import { useFetchRecipientUser } from "../../utils/user";
-import { getMessage, updateCurrentMessage } from "../../features/Message/messageSlide";
-import { handleSocket } from "../../features/User/userSlice";
+import { getMessage } from "../../features/Message/messageSlide";
+import { connectSocket, socket } from "../../socket";
 
 const PaneListChat = (props) => {
   const [user, setUser] = useState({});
@@ -161,24 +160,18 @@ export default function LayoutChat() {
   const navigate = useNavigate();
   const dispatch = useDispatch()
   const active = useSelector(state=>state.activePane.active)
-  const {user} = JSON.parse(localStorage.getItem('user'))
-
+  const [user,setUser] = useState(JSON.parse(localStorage.getItem('user')))
   useEffect(()=>{
-    const getSocket=async()=>{
-      try {
-        await dispatch(handleSocket())
-      } catch (error) {
-        console.log(error);
-      }
+    if(!socket){
+      connectSocket(user._id)
     }
-    getSocket()
-  },[user])
-  
+  },[user, socket])
 
   const [activeFriend, setActiveFriend] = useState("FriendsList");
 
   const handleLogOut = () => {
     localStorage.removeItem("user");
+    socket.disconnect()
     navigate("/chat-app/login");
   };
   const selectActiveMenu = async(value) => {

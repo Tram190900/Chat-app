@@ -7,8 +7,12 @@ import LayoutChat from "./Layout/LayoutChat";
 import FriendScreen from "./View/FriendScreen";
 import SignUp from "./View/SignUp";
 import ProtectedRouter from "./Layout/ProtectedRouter";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { handleSocket } from "./features/User/userSlice";
 
 function App() {
+  
   return (
     <BrowserRouter>
       <Routes>
