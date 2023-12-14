@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useContext, useEffect, useState } from "react";
+import React, {useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Style from "./LayoutChat.module.scss";
 import { BsSnapchat, BsChatDots } from "react-icons/bs";
@@ -15,6 +15,7 @@ import FriendScreen from "./../../View/FriendScreen/index";
 import { selectActive } from "../../features/ActivePane/ActivePaneSlice";
 import { getMessage } from "../../features/Message/messageSlide";
 import { connectSocket, socket } from "../../socket";
+import { handleGetOnlineUsers } from "../../features/User/userSlice";
 
 const PaneListChat = (props) => {
   const [user, setUser] = useState({});
@@ -56,7 +57,12 @@ const PaneListChat = (props) => {
       <div className={clsx(Style.lstFriendWrap)}>
         {listChat.current && listChat.current.length > 0
           ? listChat.current.map((item, index) => (
-              <CardPeople key={index} user={user} chat={item} keyProps={item._id}/>
+              <CardPeople
+                key={index}
+                user={user}
+                chat={item}
+                keyProps={item._id}
+              />
             ))
           : null}
       </div>
@@ -64,11 +70,12 @@ const PaneListChat = (props) => {
   );
 };
 
-const CardPeople =  ({chat,keyProps}) => {
-  const [userRecipient, setUserRecipient] = useState({})
+const CardPeople = ({ chat, keyProps }) => {
+  const [userRecipient, setUserRecipient] = useState({});
   const dispatch = useDispatch();
-  const selectedChat = useSelector(state=>state.chat.selectedChat)
-  const user = JSON.parse(localStorage.getItem('user'))
+  const selectedChat = useSelector((state) => state.chat.selectedChat);
+  const onlineUsers = useSelector((state)=> state.user.onlineUsers)
+
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("user"))._id;
     const userRevicerId = chat.members.find((id) => id !== userId);
@@ -82,10 +89,12 @@ const CardPeople =  ({chat,keyProps}) => {
   }, []);
   const handleSelected = async (id) => {
     try {
-      const rs = await dispatch(
+      await dispatch(
         handleSelectedChat(`${baseUrlApi}/chat/find/${id}`)
       );
-      const message = await dispatch(getMessage(`${baseUrlApi}/message/${chat._id}`))
+      await dispatch(
+        getMessage(`${baseUrlApi}/message/${chat._id}`)
+      );
     } catch (error) {
       console.log(error);
     }
@@ -93,7 +102,10 @@ const CardPeople =  ({chat,keyProps}) => {
 
   return (
     <Card
-      className={clsx(Style.cardWrap, keyProps===selectedChat._id?Style.active:'')}
+      className={clsx(
+        Style.cardWrap,
+        keyProps === selectedChat._id ? Style.active : ""
+      )}
       onClick={() => {
         handleSelected(chat._id);
       }}
@@ -105,7 +117,18 @@ const CardPeople =  ({chat,keyProps}) => {
       <Card.Body className={clsx(Style.cardBody)}>
         <Card.Title className={clsx(Style.cardTitle)}>
           <p>{userRecipient.name}</p>
-          <p>Time</p>
+          <span>
+            <p>Time</p>
+            {
+              onlineUsers.length > 0 && onlineUsers.map((item, index)=>{
+                if(item.userId===userRecipient._id){
+                  return(
+                    <div key={index} className={clsx(Style.onlineDot)}></div>
+                  )
+                }
+              })
+            }
+          </span>
         </Card.Title>
         <Card.Text className={clsx(Style.shortMessage)}>
           Some quick example text to build on the card title and make up the
@@ -158,26 +181,39 @@ const PaneListFriend = (props) => {
 
 export default function LayoutChat() {
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  const active = useSelector(state=>state.activePane.active)
-  const [user,setUser] = useState(JSON.parse(localStorage.getItem('user')))
-  useEffect(()=>{
-    if(!socket){
-      connectSocket(user._id)
-    }
-  },[user, socket])
+  const dispatch = useDispatch();
+  const active = useSelector((state) => state.activePane.active);
+  const user = JSON.parse(localStorage.getItem("user"));
 
   const [activeFriend, setActiveFriend] = useState("FriendsList");
 
+  useEffect(() => {
+    if (!socket) {
+      connectSocket(user._id);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (socket == null) return;
+    socket.emit("addNewUser", user._id);
+    socket.on("getOnlineUser", (res) => {
+      dispatch(handleGetOnlineUsers(res));
+    });
+
+    return()=>{
+      socket.off('getOnlineUser')
+    }
+  }, [socket]);
+  
+
   const handleLogOut = () => {
     localStorage.removeItem("user");
+    socket.emit('disconnet')
     socket.disconnect()
     navigate("/chat-app/login");
   };
-  const selectActiveMenu = async(value) => {
-    await dispatch(
-      selectActive(value)
-    )
+  const selectActiveMenu = async (value) => {
+    await dispatch(selectActive(value));
   };
   const selectActiveFriend = (value) => {
     setActiveFriend(value);
@@ -224,7 +260,7 @@ export default function LayoutChat() {
             active === "chat" ? Style.active : ""
           )}
         >
-          <PaneListChat active={active}/>
+          <PaneListChat active={active} />
         </div>
         <div
           className={clsx(

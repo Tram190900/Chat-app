@@ -25,7 +25,11 @@ const messageSlide = createSlice({
   initialState: {
     message: null,
   },
-  reducers: {},
+  reducers: {
+    handleSetMessage:(state, action)=>{
+      state.message = [...state.message, action.payload]
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(getMessage.fulfilled, (state, action) => {
       state.message = action.payload;
@@ -36,4 +40,5 @@ const messageSlide = createSlice({
   },
 });
 const { actions, reducer } = messageSlide;
+export const {handleSetMessage} = actions
 export default reducer;

@@ -17,6 +17,7 @@ import { useFetchRecipientUser } from "../../utils/user";
 import { sendMessage } from "../../features/Message/messageSlide";
 import moment from "moment";
 import InputEmoji from "react-input-emoji";
+import { socket } from "../../socket";
 
 const CardRecipient = ({ chat, user }) => {
   const { userRecipient } = useFetchRecipientUser(chat, user);
@@ -73,6 +74,23 @@ const ChatScreen = () => {
   useEffect(() => {
     setUser(JSON.parse(localStorage.getItem("user")));
   }, []);
+
+  useEffect(()=>{
+    if(socket===null) return
+    const respientId = selectedChat.members.find( id => id !==user._id)
+    socket.emit('sendMessage', {...message, respientId })
+  },[message])
+
+  useEffect(()=>{
+    if(socket===null) return
+    socket.on('getMessage', res =>{
+      if(selectedChat?._id !== res.chatId) return
+      dispatch(handleSendMessage(inputMessage))
+    })
+    return()=>{
+      socket.off('getMessage')
+    }
+  },[socket, message])
 
   const handleSendMessage = async () => {
     if (inputMessage.trim().length > 0) {

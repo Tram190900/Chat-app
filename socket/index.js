@@ -2,7 +2,7 @@ const { Server } = require("socket.io");
 require('dotenv').config()
 
 const io = new Server({cors: 'http://localhost:3000'});
-const onlineUser = []
+let onlineUser = []
 
 io.on("connection", (socket) => {
   console.log("new connection", socket.id);
@@ -12,8 +12,22 @@ io.on("connection", (socket) => {
         userId,
         socketId: socket.id
       })
+      console.log('connnect',onlineUser);
+      io.emit('getOnlineUser', onlineUser)
     })
-  console.log(onlineUser);
+
+  socket.on('disconnet',()=>{
+    onlineUser = onlineUser.filter(user=> user.socketId !== socket.id)
+    console.log('disconnet',onlineUser);
+    io.emit('getOnlineUser', onlineUser)
+  })
+
+  socket.on('sendMessage', (message)=>{
+    const user = onlineUser.find(user => user.userId === message.respientId)
+    if(user){
+      io.to(user.socketId).emit('getMessage', message)
+    }
+  })
 });
 
 io.listen(process.env.POST);

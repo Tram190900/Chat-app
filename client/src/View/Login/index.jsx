@@ -11,6 +11,7 @@ import {useDispatch} from 'react-redux'
 import { UserContext } from "../../Context/userContext";
 import { getUser } from "../../features/User/userSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
+import { connectSocket, socket } from "../../socket";
 
 const Login = () => {
   const [email, setEmail] = useState("");

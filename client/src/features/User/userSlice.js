@@ -26,6 +26,7 @@ const userSlice = createSlice({
     },
     loading: false,
     error: "",
+    onlineUsers:[]
   },
   
   reducers: {
@@ -44,10 +45,13 @@ const userSlice = createSlice({
     // handleDisconnectSocket:(state)=>{
     //   state.socket.disconnect()
     // }
+    handleGetOnlineUsers:(state, action)=>{
+      state.onlineUsers = action.payload
+    }
   },
   extraReducers: (builder)=>{
     builder
-    .addCase(getUser.pending, (state) => {
+    .addCase(getUser.pending, (state, action) => {
       state.loading = true;
     })
     .addCase(getUser.rejected, (state, action) => {
@@ -62,5 +66,5 @@ const userSlice = createSlice({
 });
 
 const { actions, reducer } = userSlice;
-export const {handleSocket, handleOnlineUser, handleDisconnectSocket} = actions
+export const {handleGetOnlineUsers} = actions
 export default reducer;

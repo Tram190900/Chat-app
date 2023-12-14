@@ -98,7 +98,9 @@
       height: 70px;
       border-radius: 40px;
       background-color: pink;
+      position: relative;
     }
+    
     .cardBody {
       display: flex;
       flex-direction: column;
@@ -107,6 +109,21 @@
           display: flex;
           justify-content: space-between;
           font-size: 18px;
+          span{
+            display: flex;
+            align-items: baseline;
+            p{
+              margin-right: 10px;
+              font-size: 15px;
+              color: rgb(174, 174, 174);
+            }
+            .onlineDot{
+              width: 8px;
+              height: 8px;
+              background-color: #26e757;
+              border-radius: 15px;
+            }
+          }
       }
       .shortMessage{
           overflow: hidden;
