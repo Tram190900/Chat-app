@@ -3,6 +3,7 @@ require("dotenv").config();
 const route = require('./routes')
 const db = require("./config/db/index");
 const cors = require('cors')
+const { promisify } = require("util");
 
 const app = express();
 db.connected();

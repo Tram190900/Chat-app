@@ -23,19 +23,22 @@ export const sendMessage = createAsyncThunk('message/sendMessage', async({url, d
 const messageSlide = createSlice({
   name: "message",
   initialState: {
-    message: null,
+    currenMessage: null,
+    newMessage: null
   },
   reducers: {
-    handleSetMessage:(state, action)=>{
-      state.message = [...state.message, action.payload]
-    }
+    handleSetMessage: (state, action) => {
+      console.log(action.payload);
+      state.currenMessage = [...state.currenMessage, action.payload];
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getMessage.fulfilled, (state, action) => {
-      state.message = action.payload;
+      state.currenMessage = action.payload;
     })
     .addCase(sendMessage.fulfilled, (state, action)=>{
-      state.message = [...state.message, action.payload]
+      state.newMessage = action.payload
+      state.currenMessage = [...state.currenMessage, action.payload]
     });
   },
 });

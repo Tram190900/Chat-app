@@ -2,22 +2,25 @@ import clsx from "clsx";
 import Style from "./ChatScreen.module.scss";
 
 import {
-  MdSearch,
   MdLocalPhone,
   MdOutlineVideoCameraFront,
   MdSend,
 } from "react-icons/md";
 import { Card, Image } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CiMenuKebab } from "react-icons/ci";
 import { useDispatch, useSelector } from "react-redux";
 import { baseUrlApi } from "../../api/chatAPI";
 import welcome from "./../../image/welcome_v2.jpg";
 import { useFetchRecipientUser } from "../../utils/user";
-import { sendMessage } from "../../features/Message/messageSlide";
+import {
+  handleSetMessage,
+  sendMessage,
+} from "../../features/Message/messageSlide";
 import moment from "moment";
 import InputEmoji from "react-input-emoji";
 import { socket } from "../../socket";
+import { unwrapResult } from "@reduxjs/toolkit";
 
 const CardRecipient = ({ chat, user }) => {
   const { userRecipient } = useFetchRecipientUser(chat, user);
@@ -44,9 +47,10 @@ const CardRecipient = ({ chat, user }) => {
 const ContentSend = ({ text, time }) => {
   return (
     <div className={clsx(Style.sendWrap)}>
-      <p>{text}
-      <span>{moment(time).calendar()}</span></p>
-      
+      <p>
+        {text}
+        <span>{moment(time).calendar()}</span>
+      </p>
     </div>
   );
 };
@@ -56,9 +60,10 @@ const ContentRecipient = ({ text, time }) => {
     <div className={clsx(Style.reciverWrap)}>
       <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png" />
       <div>
-        <p>{text}
-        <span>{moment(time).calendar()}</span></p>
-        
+        <p>
+          {text}
+          <span>{moment(time).calendar()}</span>
+        </p>
       </div>
     </div>
   );
@@ -66,31 +71,35 @@ const ContentRecipient = ({ text, time }) => {
 
 const ChatScreen = () => {
   const selectedChat = useSelector((state) => state.chat.selectedChat);
-  const message = useSelector((state) => state.message.message);
+  const message = useSelector((state) => state.message.currenMessage);
+  const newMessage = useSelector((state)=> state.message.newMessage)
+  const activePane = useSelector((state)=> state.activePane.active)
   const [inputMessage, setInputMessage] = useState("");
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const dispatch = useDispatch();
+  const scrollRef = useRef(null);
 
   useEffect(() => {
-    setUser(JSON.parse(localStorage.getItem("user")));
-  }, []);
+    if (socket === null) return;
+    if (selectedChat.members.length <= 0) return;
+    const respientId = selectedChat.members.find((id) => id !== user._id);
+    socket.emit("sendMessage", { ...newMessage, respientId });
+  }, [newMessage]);
 
-  useEffect(()=>{
-    if(socket===null) return
-    const respientId = selectedChat.members.find( id => id !==user._id)
-    socket.emit('sendMessage', {...message, respientId })
-  },[message])
+  useEffect(() => {
+    if (socket === null || selectedChat.members.length <= 0) return;
+    socket.on("getMessage", (res) => {
+      if (selectedChat._id !== res.chatId) return;
+      dispatch(handleSetMessage(res));
+    });
+    return () => {
+      socket.off("getMessage");
+    };
+  }, [socket, selectedChat]);
 
-  useEffect(()=>{
-    if(socket===null) return
-    socket.on('getMessage', res =>{
-      if(selectedChat?._id !== res.chatId) return
-      dispatch(handleSendMessage(inputMessage))
-    })
-    return()=>{
-      socket.off('getMessage')
-    }
-  },[socket, message])
+  useEffect(() => {
+    scrollRef.current?.scrollIntoView({ behaviour: "smooth" });
+  }, [message, selectedChat]);
 
   const handleSendMessage = async () => {
     if (inputMessage.trim().length > 0) {
@@ -100,7 +109,7 @@ const ChatScreen = () => {
         text: inputMessage,
       };
       try {
-        await dispatch(
+        const rs = await dispatch(
           sendMessage({ url: `${baseUrlApi}/message`, data: data })
         );
         setInputMessage("");
@@ -121,7 +130,10 @@ const ChatScreen = () => {
               <CardRecipient chat={selectedChat} user={user} />
             </div>
             <div className={clsx(Style.chatContent)}>
-              <div id="style-1" className={clsx(Style.chatGroup)}>
+              <div
+                id="style-1"
+                className={clsx(Style.chatGroup)}
+              >
                 {/* {contentChat.map((item, index) => {
                   if (item.flat === "s") {
                     return <ContentSend key={index} item={item.content} />;
@@ -132,17 +144,19 @@ const ChatScreen = () => {
                 {message &&
                   message.map((item, index) =>
                     item.senderId === user._id ? (
-                      <ContentSend
-                        key={index}
-                        text={item.text}
-                        time={item.createdAt}
-                      />
+                      <span ref={scrollRef} key={index}>
+                        <ContentSend
+                          text={item.text}
+                          time={item.createdAt}
+                        />
+                      </span>
                     ) : (
-                      <ContentRecipient
-                        key={index}
-                        text={item.text}
-                        time={item.createdAt}
-                      />
+                      <span ref={scrollRef} key={index}>
+                        <ContentRecipient
+                          text={item.text}
+                          time={item.createdAt}
+                        />
+                      </span>
                     )
                   )}
               </div>
@@ -155,11 +169,11 @@ const ChatScreen = () => {
                   value={inputMessage}
                 /> */}
                 <InputEmoji
-                 value={inputMessage}
-                 onChange={setInputMessage}
-                 cleanOnEnter
-                 onEnter={handleSendMessage}
-                 placeholder="Type a message"
+                  value={inputMessage}
+                  onChange={setInputMessage}
+                  cleanOnEnter
+                  onEnter={handleSendMessage}
+                  placeholder="Type a message"
                 />
                 <MdSend
                   size={30}

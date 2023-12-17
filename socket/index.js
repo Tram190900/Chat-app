@@ -25,7 +25,7 @@ io.on("connection", (socket) => {
   socket.on('sendMessage', (message)=>{
     const user = onlineUser.find(user => user.userId === message.respientId)
     if(user){
-      io.to(user.socketId).emit('getMessage', message)
+      socket.to(user.socketId).emit('getMessage', message)
     }
   })
 });

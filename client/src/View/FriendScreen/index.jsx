@@ -7,25 +7,14 @@ import { baseUrlApi, getUserRequest } from "./../../api/userAPI";
 import { getChatRequest, postChatRequest } from "./../../api/chatAPI";
 import { Image } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectActive } from "../../features/ActivePane/ActivePaneSlice";
 import { handleExitsChat } from "../../features/Chat/chatSlice";
 
 const FriendsList = () => {
-  const [friends, setFriends] = useState([]);
+  const friends = useSelector((state)=> state.user.currentFriends)
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    const userId = JSON.parse(localStorage.getItem("user"))._id;
-    getUserRequest(`${baseUrlApi}/user/${userId}/friends`)
-      .then((result) => {
-        setFriends(result.data.friends);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
 
   const handleCreateChat = async (id) => {
     const userId = JSON.parse(localStorage.getItem("user"))._id;

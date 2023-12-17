@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { getChatRequest, postChatRequest } from "../../api/chatAPI";
 
-export const getChat = createAsyncThunk(
-  "chat/getChat",
+export const getChatByUser = createAsyncThunk(
+  "chat/getChatByUser",
   async (params, thunkAPI) => {
     try {
       if (!thunkAPI.getState().chat.current._id) {
@@ -14,8 +14,8 @@ export const getChat = createAsyncThunk(
     }
   }
 );
-export const handleSelectedChat = createAsyncThunk(
-  "chat/handleSelectedChat",
+export const handleSelectedChatByChatId = createAsyncThunk(
+  "chat/handleSelectedChatByChatId",
   async (params) => {
     try {
       const selectedChat = await getChatRequest(params);
@@ -53,10 +53,10 @@ const chatSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getChat.fulfilled, (state, action) => {
+      .addCase(getChatByUser.fulfilled, (state, action) => {
         state.current = action.payload;
       })
-      .addCase(handleSelectedChat.fulfilled, (state, action) => {
+      .addCase(handleSelectedChatByChatId.fulfilled, (state, action) => {
         state.selectedChat = action.payload;
       })
       .addCase(handleCreateChat.fulfilled, (state,action)=>{
