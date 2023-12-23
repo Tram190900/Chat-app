@@ -20,7 +20,6 @@ import {
 import moment from "moment";
 import InputEmoji from "react-input-emoji";
 import { socket } from "../../socket";
-import { unwrapResult } from "@reduxjs/toolkit";
 
 const CardRecipient = ({ chat, user }) => {
   const { userRecipient } = useFetchRecipientUser(chat, user);
@@ -73,7 +72,6 @@ const ChatScreen = () => {
   const selectedChat = useSelector((state) => state.chat.selectedChat);
   const message = useSelector((state) => state.message.currenMessage);
   const newMessage = useSelector((state)=> state.message.newMessage)
-  const activePane = useSelector((state)=> state.activePane.active)
   const [inputMessage, setInputMessage] = useState("");
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const dispatch = useDispatch();

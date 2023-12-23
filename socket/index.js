@@ -28,6 +28,13 @@ io.on("connection", (socket) => {
       socket.to(user.socketId).emit('getMessage', message)
     }
   })
+
+  socket.on('sendRequest', (request)=>{
+    const user = onlineUser.find(user=>user.userId === request.recipient._id)
+    if(user){
+      socket.to(user.socketId).emit('getRequest', request)
+    }
+  })
 });
 
 io.listen(process.env.POST);

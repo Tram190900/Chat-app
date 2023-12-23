@@ -28,7 +28,6 @@ const messageSlide = createSlice({
   },
   reducers: {
     handleSetMessage: (state, action) => {
-      console.log(action.payload);
       state.currenMessage = [...state.currenMessage, action.payload];
     },
   },

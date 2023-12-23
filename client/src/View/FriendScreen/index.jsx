@@ -8,7 +8,9 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActive } from "../../features/ActivePane/ActivePaneSlice";
 import { handleExitsChat } from "../../features/Chat/chatSlice";
-import { getFriendRequestByRecipient } from "../../features/FriendRequest/friendRequest";
+import { socket } from "../../socket";
+import { handleGetRequest } from "../../features/FriendRequest/friendRequest";
+import { getFriendRequest } from "../../api/friendRequestAPI";
 
 const FriendsList = () => {
   const friends = useSelector((state) => state.user.currentFriends);
@@ -57,41 +59,53 @@ const FriendsList = () => {
   );
 };
 const FriendRequest = () => {
-  const dispatch = useDispatch();
-  const user = JSON.parse(localStorage.getItem("user"));
   const allRequest = useSelector((state) => state.friendRequest.currentRequest);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const getAllRequest = async () => {
-      await dispatch(
-        getFriendRequestByRecipient(
-          `${baseUrlApi}/friendRequest/findByRecipient/${user._id}`
-        )
-      );
+    if (socket === null) return;
+    socket.on("getRequest", (res) => {
+      dispatch(handleGetRequest(res));
+    });
+    return () => {
+      socket.off("getRequest");
     };
-    getAllRequest();
-  }, []);
+  }, [socket]);
+
+  const handleAcceptRequest = async (id) => {
+    try {
+      const response = await getFriendRequest(
+        `${baseUrlApi}/friendRequest/acceptRequest/${id}`
+      );
+      if (response.status == 200) {
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       {allRequest.length > 0 &&
-        allRequest.map((item, index) => {
-          if (!item.stateAccept) {
-            return (
-              <div key={index} className={clsx(Style.friendsRequest)}>
-                <div>
-                  <Image
-                    className={clsx(Style.imageFr)}
-                    roundedCircle
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png"
-                  />
-                  <p>{item.sender.name}</p>
-                </div>
-                <Button>Add Friend</Button>
-              </div>
-            );
-          }
-
-          return null;
-        })}
+        allRequest.map((item, index) => (
+          <div key={index} className={clsx(Style.friendsRequest)}>
+            <div>
+              <Image
+                className={clsx(Style.imageFr)}
+                roundedCircle
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png"
+              />
+              <p>{item.sender.name}</p>
+            </div>
+            <Button
+              onClick={() => {
+                handleAcceptRequest(item._id);
+              }}
+            >
+              Add Friend
+            </Button>
+          </div>
+        ))}
     </>
   );
 };

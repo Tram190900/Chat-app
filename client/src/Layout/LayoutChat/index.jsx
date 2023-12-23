@@ -3,8 +3,22 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Style from "./LayoutChat.module.scss";
 import { BsSnapchat, BsChatDots } from "react-icons/bs";
-import { MdOutlinePeopleAlt, MdLogout, MdSearch } from "react-icons/md";
-import { Button, Card, Form, Image, InputGroup, Modal, ToastContainer } from "react-bootstrap";
+import {
+  MdOutlinePeopleAlt,
+  MdLogout,
+  MdSearch,
+  MdOutlineCancelScheduleSend,
+  MdPersonAddDisabled,
+} from "react-icons/md";
+import {
+  Button,
+  Card,
+  Form,
+  Image,
+  InputGroup,
+  Modal,
+  ToastContainer,
+} from "react-bootstrap";
 import {
   getChatByUser,
   handleSelectedChat,
@@ -26,6 +40,11 @@ import imageNotFound from "../../image/notFound.jpg";
 import { unwrapResult } from "@reduxjs/toolkit";
 import { postFriendRequest } from "../../api/friendRequestAPI";
 import Swal from "sweetalert2";
+import {
+  getFriendRequestByRecipient,
+  getFriendRequestBySender,
+  handleNewRequest,
+} from "../../features/FriendRequest/friendRequest";
 
 const CardPeople = ({ chat, keyProps }) => {
   const [userRecipient, setUserRecipient] = useState({});
@@ -95,12 +114,16 @@ const CardPeople = ({ chat, keyProps }) => {
 
 const CardSearchUser = ({ user }) => {
   const friends = useSelector((state) => state.user.currentFriends);
+  const sendRequest = useSelector((state) => state.friendRequest.sendedRequest);
   const isFriend = friends.some((friend) => friend._id === user._id);
-  const [openModal, setModal] = useState(false);
+  const [wasSender, setWasSender] = useState(false);
   const dispatch = useDispatch();
+  const wasSendRequest = sendRequest.some(
+    (item) => item.recipient._id === user._id
+  );
+  const [openModal, setModal] = useState(false);
 
   const handleSelectCard = async () => {
-    const currentUserId = JSON.parse(localStorage.getItem("user"))._id;
     try {
       if (!isFriend) {
         setModal(!openModal);
@@ -111,21 +134,25 @@ const CardSearchUser = ({ user }) => {
   };
   const handleSendFriendRequest = async () => {
     const currentUserId = JSON.parse(localStorage.getItem("user"))._id;
+
     const data = {
       sender: currentUserId,
       recipient: user._id,
     };
     try {
       const rs = await postFriendRequest(`${baseUrlApi}/friendRequest`, data);
-      if(rs.status===200){
+      if (rs.status === 200) {
         Swal.fire({
-          position: 'center',
-          icon: 'success',
+          position: "center",
+          icon: "success",
           title: "Send request successfully",
           showConfirmButton: false,
-          timer: 1500
-        })
-        setModal(false)
+          timer: 1500,
+        });
+        setWasSender(true);
+        setModal(false);
+        if (socket === null) return;
+        socket.emit("sendRequest", { ...rs.data });
       }
     } catch (error) {
       console.log(error);
@@ -147,7 +174,13 @@ const CardSearchUser = ({ user }) => {
         <Card.Body className={clsx(Style.cardBody)}>
           <Card.Title className={clsx(Style.cardTitle)}>
             <p>{user.name}</p>
-            {!isFriend && <AiOutlineUserAdd size={25} />}
+            {!isFriend && !wasSender  ? (
+              <AiOutlineUserAdd size={25} />
+            ) : !isFriend && wasSender ? (
+              <MdOutlineCancelScheduleSend size={25} />
+            ) : (
+              null
+            )}
           </Card.Title>
         </Card.Body>
       </Card>
@@ -155,10 +188,30 @@ const CardSearchUser = ({ user }) => {
         <Modal.Header closeButton></Modal.Header>
         <Modal.Body className="d-flex justify-content-between align-items-center">
           <span className="d-flex align-items-center">
-            <AiOutlineUserAdd size={30} />
-            Send a friend request to this person
+            {!isFriend && !wasSender && !wasSender ? (
+              <>
+                <AiOutlineUserAdd size={30} />
+                Send a friend request to this person
+              </>
+            ) : !isFriend && wasSender && !wasSender ? (
+              <>
+                <MdPersonAddDisabled size={30} />
+                Canceling friend request
+              </>
+            ) : (
+              <>
+                <MdPersonAddDisabled size={30} />
+                Canceling friend request
+              </>
+            )}
           </span>
-          <Button onClick={()=>handleSendFriendRequest()}>Send request</Button>
+          {!isFriend && !wasSendRequest && !wasSender ? (
+              <Button onClick={() => handleSendFriendRequest()}>Send request</Button>
+            ) : !isFriend && wasSendRequest && !wasSender ? (
+              <Button>Cancel request</Button>
+            ) : (
+              <Button>Cancel request</Button>
+            )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setModal(!openModal)}>
@@ -315,6 +368,22 @@ export default function LayoutChat() {
       }
     };
     listFriend();
+    const getAllRequest = async () => {
+      await dispatch(
+        getFriendRequestByRecipient(
+          `${baseUrlApi}/friendRequest/findByRecipient/${user._id}`
+        )
+      );
+    };
+    getAllRequest();
+    const getAllSendRequest = async () => {
+      await dispatch(
+        getFriendRequestBySender(
+          `${baseUrlApi}/friendRequest/findBySender/${user._id}`
+        )
+      );
+    };
+    getAllSendRequest();
   }, []);
 
   useEffect(() => {
