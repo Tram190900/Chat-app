@@ -9,6 +9,9 @@ const FriendRequestModel = new Schema({
   recipient:{
     type: mongoose.Schema.ObjectId,
     ref:'User'
+  },
+  stateAccept: {
+    type: Boolean //True: accept, defaut: false
   }
 },
 {

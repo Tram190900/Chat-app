@@ -1,34 +1,57 @@
-.containerFriendScreen{
-    display: flex;
-      height: 100%;
-      font-size: 18px;
-      
-      .friendListWrap{
-        display: none;
-      }
-      .friendListWrap.action{
-        display: block;
-      }
-      .friendRequestWrap{
-        display: none;
-      }
-      .friendRequestWrap.action{
-        display: block;
-      }
+.containerFriendScreen {
+  display: flex;
+  height: 100%;
+  font-size: 18px;
+
+  .friendListWrap {
+    display: none;
+  }
+  .friendListWrap.action {
+    display: block;
+  }
+  .friendRequestWrap {
+    display: none;
+  }
+  .friendRequestWrap.action {
+    display: block;
+  }
 }
-.friendsWrap{
+.friendsWrap {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  border-bottom: 2px solid rgb(174, 174, 174, 0.3);
+  padding: 2% 0;
+  cursor: pointer;
+  .imageFr {
+    width: 80px;
+    background-color: pink;
+    margin-right: 2%;
+  }
+}
+.friendsWrap:hover {
+  background-color: rgb(174, 174, 174, 0.2);
+}
+.friendsRequest {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  border-bottom: 2px solid rgb(174, 174, 174, 0.3);
+  padding: 2% 5% 2% 0;
+  width: 100%;
+  justify-content: space-between;
+  cursor: pointer;
+  div{
     display: flex;
+    width: 50%;
     align-items: center;
-    font-weight: 500;
-    border-bottom: 2px solid rgb(174, 174, 174, 0.3);
-    padding: 2% 0;
-    cursor: pointer;
-    .imageFr{
-        width: 80px;
-        background-color: pink;
-        margin-right: 2%;
+    .imageFr {
+      width: 80px;
+      background-color: pink;
+      margin-right: 2%;
     }
+  }
 }
-.friendsWrap:hover{
-    background-color: rgb(174, 174, 174, 0.2);
+.friendsRequest:hover {
+  background-color: rgb(174, 174, 174, 0.2);
 }

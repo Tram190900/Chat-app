@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from "react";
 import Style from "./FriendScreen.module.scss";
 import clsx from "clsx";
-import { MdOutlinePeopleAlt } from "react-icons/md";
-import { AiOutlineUserAdd } from "react-icons/ai";
-import { baseUrlApi, getUserRequest } from "./../../api/userAPI";
+import { baseUrlApi } from "./../../api/userAPI";
 import { getChatRequest, postChatRequest } from "./../../api/chatAPI";
-import { Image } from "react-bootstrap";
+import { Button, Image } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActive } from "../../features/ActivePane/ActivePaneSlice";
 import { handleExitsChat } from "../../features/Chat/chatSlice";
+import { getFriendRequestByRecipient } from "../../features/FriendRequest/friendRequest";
 
 const FriendsList = () => {
-  const friends = useSelector((state)=> state.user.currentFriends)
+  const friends = useSelector((state) => state.user.currentFriends);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -31,7 +30,7 @@ const FriendsList = () => {
         dispatch(selectActive("chat"));
       }
     } else {
-      dispatch(handleExitsChat(exitChat.data))
+      dispatch(handleExitsChat(exitChat.data));
       dispatch(selectActive("chat"));
     }
   };
@@ -58,7 +57,43 @@ const FriendsList = () => {
   );
 };
 const FriendRequest = () => {
-  return <p>Friend request</p>;
+  const dispatch = useDispatch();
+  const user = JSON.parse(localStorage.getItem("user"));
+  const allRequest = useSelector((state) => state.friendRequest.currentRequest);
+  useEffect(() => {
+    const getAllRequest = async () => {
+      await dispatch(
+        getFriendRequestByRecipient(
+          `${baseUrlApi}/friendRequest/findByRecipient/${user._id}`
+        )
+      );
+    };
+    getAllRequest();
+  }, []);
+  return (
+    <>
+      {allRequest.length > 0 &&
+        allRequest.map((item, index) => {
+          if (!item.stateAccept) {
+            return (
+              <div key={index} className={clsx(Style.friendsRequest)}>
+                <div>
+                  <Image
+                    className={clsx(Style.imageFr)}
+                    roundedCircle
+                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png"
+                  />
+                  <p>{item.sender.name}</p>
+                </div>
+                <Button>Add Friend</Button>
+              </div>
+            );
+          }
+
+          return null;
+        })}
+    </>
+  );
 };
 
 export default function FriendScreen(props) {

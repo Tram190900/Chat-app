@@ -10,18 +10,18 @@ export const getChatByUser = createAsyncThunk(
         return currentListChat.data;
       }
     } catch (error) {
-      throw error;
+      throw error.response.data;
     }
   }
 );
-export const handleSelectedChatByChatId = createAsyncThunk(
+export const handleSelectedChat = createAsyncThunk(
   "chat/handleSelectedChatByChatId",
   async (params) => {
     try {
       const selectedChat = await getChatRequest(params);
       return selectedChat.data;
     } catch (error) {
-      console.log(error);
+      throw error.response.data
     }
   }
 );
@@ -30,7 +30,7 @@ export const handleCreateChat=createAsyncThunk('chat/handleCreateChat', async(ur
     const createChat = await postChatRequest(url, data)
     return createChat.data
   } catch (error) {
-    console.log(error);
+    throw error
   }
 })
 
@@ -56,7 +56,7 @@ const chatSlice = createSlice({
       .addCase(getChatByUser.fulfilled, (state, action) => {
         state.current = action.payload;
       })
-      .addCase(handleSelectedChatByChatId.fulfilled, (state, action) => {
+      .addCase(handleSelectedChat.fulfilled, (state, action) => {
         state.selectedChat = action.payload;
       })
       .addCase(handleCreateChat.fulfilled, (state,action)=>{

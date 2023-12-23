@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import Style from "./LayoutChat.module.scss";
 import { BsSnapchat, BsChatDots } from "react-icons/bs";
 import { MdOutlinePeopleAlt, MdLogout, MdSearch } from "react-icons/md";
-import { Card, Form, Image, InputGroup } from "react-bootstrap";
+import { Button, Card, Form, Image, InputGroup, Modal, ToastContainer } from "react-bootstrap";
 import {
   getChatByUser,
-  handleSelectedChatByChatId,
+  handleSelectedChat,
 } from "../../features/Chat/chatSlice";
 import { baseUrlApi } from "../../api/chatAPI";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,6 +22,10 @@ import {
   getFriends,
   handleGetOnlineUsers,
 } from "../../features/User/userSlice";
+import imageNotFound from "../../image/notFound.jpg";
+import { unwrapResult } from "@reduxjs/toolkit";
+import { postFriendRequest } from "../../api/friendRequestAPI";
+import Swal from "sweetalert2";
 
 const CardPeople = ({ chat, keyProps }) => {
   const [userRecipient, setUserRecipient] = useState({});
@@ -42,8 +46,8 @@ const CardPeople = ({ chat, keyProps }) => {
   }, []);
   const handleSelected = async (id) => {
     try {
-      await dispatch(
-        handleSelectedChatByChatId(`${baseUrlApi}/chat/find/${id}`)
+      const rs = await dispatch(
+        handleSelectedChat(`${baseUrlApi}/chat/find/${id}`)
       );
       await dispatch(getMessage(`${baseUrlApi}/message/${chat._id}`));
     } catch (error) {
@@ -92,26 +96,77 @@ const CardPeople = ({ chat, keyProps }) => {
 const CardSearchUser = ({ user }) => {
   const friends = useSelector((state) => state.user.currentFriends);
   const isFriend = friends.some((friend) => friend._id === user._id);
+  const [openModal, setModal] = useState(false);
+  const dispatch = useDispatch();
+
+  const handleSelectCard = async () => {
+    const currentUserId = JSON.parse(localStorage.getItem("user"))._id;
+    try {
+      if (!isFriend) {
+        setModal(!openModal);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleSendFriendRequest = async () => {
+    const currentUserId = JSON.parse(localStorage.getItem("user"))._id;
+    const data = {
+      sender: currentUserId,
+      recipient: user._id,
+    };
+    try {
+      const rs = await postFriendRequest(`${baseUrlApi}/friendRequest`, data);
+      if(rs.status===200){
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: "Send request successfully",
+          showConfirmButton: false,
+          timer: 1500
+        })
+        setModal(false)
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
-    <Card
-      className={clsx(Style.cardWrap)}
-      onClick={() => {
-        console.log("open");
-      }}
-    >
-      <Card.Img
-        className={clsx(Style.cardImage)}
-        src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png"
-      />
-      <Card.Body className={clsx(Style.cardBody)}>
-        <Card.Title className={clsx(Style.cardTitle)}>
-          <p>{user.name}</p>
-          {
-            !isFriend && <AiOutlineUserAdd size={25}/>
-          }
-        </Card.Title>
-      </Card.Body>
-    </Card>
+    <>
+      <Card
+        className={clsx(Style.cardWrap)}
+        onClick={() => {
+          handleSelectCard();
+        }}
+      >
+        <Card.Img
+          className={clsx(Style.cardImage)}
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png"
+        />
+        <Card.Body className={clsx(Style.cardBody)}>
+          <Card.Title className={clsx(Style.cardTitle)}>
+            <p>{user.name}</p>
+            {!isFriend && <AiOutlineUserAdd size={25} />}
+          </Card.Title>
+        </Card.Body>
+      </Card>
+      <Modal show={openModal} onHide={() => setModal(!openModal)}>
+        <Modal.Header closeButton></Modal.Header>
+        <Modal.Body className="d-flex justify-content-between align-items-center">
+          <span className="d-flex align-items-center">
+            <AiOutlineUserAdd size={30} />
+            Send a friend request to this person
+          </span>
+          <Button onClick={()=>handleSendFriendRequest()}>Send request</Button>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setModal(!openModal)}>
+            Close
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 
@@ -178,20 +233,25 @@ const PaneListChat = (props) => {
         </InputGroup>
       </div>
       <div className={clsx(Style.lstFriendWrap)}>
-        {listChat.current && listChat.current.length > 0 && inputUserName <= 0
-          ? listChat.current.map((item, index) => (
-              <CardPeople
-                key={index}
-                user={user}
-                chat={item}
-                keyProps={item._id}
-              />
-            ))
-          : inputUserName.length > 0 || listSearch.length > 0
-          ? listSearch.map((item, index) => (
-              <CardSearchUser user={item} key={index} />
-            ))
-          : null}
+        {listChat.current &&
+        listChat.current.length > 0 &&
+        inputUserName.length <= 0 ? (
+          listChat.current.map((item, index) => (
+            <CardPeople
+              key={index}
+              user={user}
+              chat={item}
+              keyProps={item._id}
+            />
+          ))
+        ) : inputUserName.length > 0 ||
+          (listSearch && listSearch.length > 0) ? (
+          listSearch.map((item, index) => (
+            <CardSearchUser user={item} key={index} />
+          ))
+        ) : listSearch.length <= 0 ? (
+          <Image src={imageNotFound} />
+        ) : null}
       </div>
     </div>
   );
