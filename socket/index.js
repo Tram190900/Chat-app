@@ -29,10 +29,23 @@ io.on("connection", (socket) => {
     }
   })
 
-  socket.on('sendRequest', (request)=>{
-    const user = onlineUser.find(user=>user.userId === request.recipient._id)
+  socket.on('sendRequest', async (request)=>{
+    const user = await onlineUser.find(user=>user.userId === request.recipient._id)
     if(user){
       socket.to(user.socketId).emit('getRequest', request)
+    }
+  })
+  socket.on('acceptRequest', async (request)=>{
+    const user = await onlineUser.find(user => user.userId === request.sender._id)
+    if(user){
+      socket.to(user.socketId).emit('getAcceptRequest', {status: 200})
+    }
+  })
+  socket.on('sendFirstChat', async(message)=>{
+    const userRecipient = message.selectedChat.members.find(id=>id!==message.senderId)
+    const user = await onlineUser.find(user => user.userId===userRecipient)
+    if(user){
+      socket.to(user.socketId).emit('getFirstChat', {message})
     }
   })
 });

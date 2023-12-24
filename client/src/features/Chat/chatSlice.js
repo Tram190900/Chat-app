@@ -48,7 +48,11 @@ const chatSlice = createSlice({
   },
   reducers: {
     handleExitsChat:(state,action)=>{
+      console.log(action.payload);
       state.selectedChat=action.payload
+    },
+    handleNewChat:(state, action)=>{
+      state.current=[...state.current, action.payload]
     }
   },
   extraReducers: (builder) => {
@@ -70,5 +74,5 @@ const chatSlice = createSlice({
   //  }
 });
 const { reducer,actions } = chatSlice;
-export const {handleExitsChat} =actions
+export const {handleExitsChat, handleNewChat} =actions
 export default reducer;

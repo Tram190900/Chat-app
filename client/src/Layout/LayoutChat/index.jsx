@@ -21,6 +21,7 @@ import {
 } from "react-bootstrap";
 import {
   getChatByUser,
+  handleNewChat,
   handleSelectedChat,
 } from "../../features/Chat/chatSlice";
 import { baseUrlApi } from "../../api/chatAPI";
@@ -43,6 +44,7 @@ import Swal from "sweetalert2";
 import {
   getFriendRequestByRecipient,
   getFriendRequestBySender,
+  handleGetRequest,
   handleNewRequest,
 } from "../../features/FriendRequest/friendRequest";
 
@@ -174,13 +176,11 @@ const CardSearchUser = ({ user }) => {
         <Card.Body className={clsx(Style.cardBody)}>
           <Card.Title className={clsx(Style.cardTitle)}>
             <p>{user.name}</p>
-            {!isFriend && !wasSender  ? (
+            {!isFriend && !wasSender ? (
               <AiOutlineUserAdd size={25} />
             ) : !isFriend && wasSender ? (
               <MdOutlineCancelScheduleSend size={25} />
-            ) : (
-              null
-            )}
+            ) : null}
           </Card.Title>
         </Card.Body>
       </Card>
@@ -206,12 +206,14 @@ const CardSearchUser = ({ user }) => {
             )}
           </span>
           {!isFriend && !wasSendRequest && !wasSender ? (
-              <Button onClick={() => handleSendFriendRequest()}>Send request</Button>
-            ) : !isFriend && wasSendRequest && !wasSender ? (
-              <Button>Cancel request</Button>
-            ) : (
-              <Button>Cancel request</Button>
-            )}
+            <Button onClick={() => handleSendFriendRequest()}>
+              Send request
+            </Button>
+          ) : !isFriend && wasSendRequest && !wasSender ? (
+            <Button>Cancel request</Button>
+          ) : (
+            <Button>Cancel request</Button>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={() => setModal(!openModal)}>
@@ -254,6 +256,13 @@ const PaneListChat = (props) => {
     setUser(rs);
     handleGetListChat(rs._id);
   }, [props.active]);
+
+  // useEffect(()=>{
+  //   if(socket===null) return
+  //   socket.on('getFirstChat',(res)=>{
+  //     dispatch(handleNewChat(res.selectedChat))
+  //   })
+  // },[socket, listChat.current])
   return (
     <div className={clsx(Style.listWrap, "col-lg-3 col-sm-0")}>
       <div className={clsx(Style.userWrap)}>

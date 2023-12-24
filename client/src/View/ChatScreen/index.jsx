@@ -20,6 +20,7 @@ import {
 import moment from "moment";
 import InputEmoji from "react-input-emoji";
 import { socket } from "../../socket";
+import { handleNewChat } from "../../features/Chat/chatSlice";
 
 const CardRecipient = ({ chat, user }) => {
   const { userRecipient } = useFetchRecipientUser(chat, user);
@@ -80,12 +81,16 @@ const ChatScreen = () => {
   useEffect(() => {
     if (socket === null) return;
     if (selectedChat.members.length <= 0) return;
+    if (message?.length===1){
+      socket.emit('sendFirstChat',{...newMessage, selectedChat})
+    }
     const respientId = selectedChat.members.find((id) => id !== user._id);
     socket.emit("sendMessage", { ...newMessage, respientId });
   }, [newMessage]);
 
   useEffect(() => {
     if (socket === null || selectedChat.members.length <= 0) return;
+    console.log('eeeee');
     socket.on("getMessage", (res) => {
       if (selectedChat._id !== res.chatId) return;
       dispatch(handleSetMessage(res));
@@ -94,6 +99,7 @@ const ChatScreen = () => {
       socket.off("getMessage");
     };
   }, [socket, selectedChat]);
+
 
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behaviour: "smooth" });
