@@ -1,59 +1,38 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Style from "./FriendScreen.module.scss";
 import clsx from "clsx";
 import { baseUrlApi } from "./../../api/userAPI";
 import { getChatRequest, postChatRequest } from "./../../api/chatAPI";
 import { Button, Image } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActive } from "../../features/ActivePane/ActivePaneSlice";
 import { handleExitsChat } from "../../features/Chat/chatSlice";
 import { socket } from "../../socket";
-import {
-  getFriendRequestByRecipient,
-  handleGetRequest,
-} from "../../features/FriendRequest/friendRequest";
+import { getFriendRequestByRecipient } from "../../features/FriendRequest/friendRequest";
 import { getFriendRequest } from "../../api/friendRequestAPI";
 import { getFriends } from "../../features/User/userSlice";
+import { getMessage } from "../../features/Message/messageSlide";
 
 const FriendsList = () => {
   const friends = useSelector((state) => state.user.currentFriends);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // useEffect(() => {
-  //   if (socket === null) return;
-  //   const userId = JSON.parse(localStorage.getItem("user"))._id;
-  //   console.log('eeeee');
-  //   socket.on("getAcceptRequest", (res) => {
-  //     console.log('ttttt');
-  //     console.log(res);
-  //     if (res.status === "200") {
-  //       console.log(200);
-  //       dispatch(getFriends(`${baseUrlApi}/user/${userId}/friends`));
-  //     }
-  //   });
-  // }, [socket]);
 
   const handleCreateChat = async (id) => {
     const userId = JSON.parse(localStorage.getItem("user"))._id;
-    const exitChat = await getChatRequest(
-      `${baseUrlApi}/chat/find/${userId}/${id}`
-    );
-    if (exitChat.data.length === 0) {
-      const data = {
-        firstId: userId,
-        secondId: id,
-      };
-      const create = await postChatRequest(`${baseUrlApi}/chat/`, data);
-      if (create.status === "200") {
-        await dispatch(handleExitsChat(create.data))
-        await dispatch(selectActive("chat"));
-      }
-    } else {
-      dispatch(handleExitsChat(exitChat.data));
-      dispatch(selectActive("chat"));
+    const data = {
+      firstId: userId,
+      secondId: id,
+    };
+    const create = await postChatRequest(`${baseUrlApi}/chat/`, data);
+    if (create.status === 200) {
+      await dispatch(handleExitsChat(create.data));
+      await dispatch(getMessage(`${baseUrlApi}/message/${create.data._id}`))
+      selectActiveMenu("chat");
     }
+  };
+  const selectActiveMenu = async (value) => {
+    console.log(value);
+    await dispatch(selectActive(value));
   };
 
   return (
@@ -80,16 +59,6 @@ const FriendsList = () => {
 const FriendRequest = () => {
   const allRequest = useSelector((state) => state.friendRequest.currentRequest);
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (socket === null) return;
-    socket.on("getRequest", (res) => {
-      dispatch(handleGetRequest(res));
-    });
-    return () => {
-      socket.off("getRequest");
-    };
-  }, [socket]);
 
   const handleAcceptRequest = async (id) => {
     const userId = JSON.parse(localStorage.getItem("user"))._id;

@@ -45,7 +45,7 @@ io.on("connection", (socket) => {
     const userRecipient = message.selectedChat.members.find(id=>id!==message.senderId)
     const user = await onlineUser.find(user => user.userId===userRecipient)
     if(user){
-      socket.to(user.socketId).emit('getFirstChat', {message})
+      socket.to(user.socketId).emit('getFirstChat', {newChat: message.selectedChat})
     }
   })
 });

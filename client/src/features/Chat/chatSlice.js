@@ -48,7 +48,6 @@ const chatSlice = createSlice({
   },
   reducers: {
     handleExitsChat:(state,action)=>{
-      console.log(action.payload);
       state.selectedChat=action.payload
     },
     handleNewChat:(state, action)=>{

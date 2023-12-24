@@ -21,10 +21,10 @@
       flex-direction: column;
       align-items: center;
       height: 75vh;
-      .chatDots{
+      .chatDots {
         cursor: pointer;
       }
-      .peopleAlt{
+      .peopleAlt {
         cursor: pointer;
       }
       .chatDots.active {
@@ -35,10 +35,9 @@
       }
     }
   }
-  .paneActive{
+  .paneActive {
     width: 20vw;
-    border: 2px solid rgb(128, 124, 124, 0.25)
-    
+    border: 2px solid rgb(128, 124, 124, 0.25);
   }
   .listWrap {
     width: 100%;
@@ -48,9 +47,10 @@
       justify-content: center;
       align-items: center;
       padding: 3rem 0;
-      height: 40vh;
+      max-height: 40%;
       .imageWrap {
-        width: 150px;
+        width: 50%;
+        height: 50%;
         background-color: red;
         margin-bottom: 1.5rem;
       }
@@ -58,28 +58,27 @@
         font-size: 20px;
         font-weight: bold;
       }
-      InputGroup {
-        width: 90%;
-      }
     }
     .lstFriendWrap {
-        overflow-x: auto;
-        height: 55vh;
+      overflow-x: auto;
+      height: 60%;
     }
     .lstFriendWrap::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     .lstFriendWrap::-webkit-scrollbar-thumb {
-        border-radius: 5px;
-        -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-        background: rgba(0, 0, 0, 0.2);
+      border-radius: 5px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+      background: rgba(0, 0, 0, 0.2);
     }
   }
-  .paneListChat, .paneListFriend{
+  .paneListChat,
+  .paneListFriend {
     display: none;
   }
-  .paneListChat.active, .paneListFriend.active{
+  .paneListChat.active,
+  .paneListFriend.active {
     display: block;
   }
   .cardWrap {
@@ -100,73 +99,86 @@
       background-color: pink;
       position: relative;
     }
-    
+
     .cardBody {
       display: flex;
       flex-direction: column;
       font-weight: 500;
-      .cardTitle{
-          display: flex;
-          justify-content: space-between;
-          font-size: 18px;
-          span{
-            display: flex;
-            align-items: baseline;
-            p{
-              margin-right: 10px;
-              font-size: 15px;
-              color: rgb(174, 174, 174);
-            }
-            .onlineDot{
-              width: 8px;
-              height: 8px;
-              background-color: #26e757;
-              border-radius: 15px;
-            }
-          }
-      }
-      .shortMessage{
+      .cardTitle {
+        display: flex;
+        justify-content: space-between;
+        font-size: 18px;
+        .nameReicpient {
+          width: 50%;
+          white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
-          display: -webkit-box;
-          -webkit-line-clamp: 1; /* Số dòng tối đa */
-          -webkit-box-orient: vertical;
-          color: rgb(174, 174, 174);
-          font-size: 15px;
+        }
+        span {
+          display: flex;
+          align-items: baseline;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          p {
+            margin-right: 10px;
+            font-size: 15px;
+            color: rgb(174, 174, 174);
+          }
+          .onlineDot {
+            width: 8px;
+            height: 8px;
+            background-color: #26e757;
+            border-radius: 15px;
+          }
+        }
+      }
+      .shortMessage {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 1; /* Số dòng tối đa */
+        -webkit-box-orient: vertical;
+        color: rgb(174, 174, 174);
+        font-size: 15px;
+        width: 90%;
       }
     }
   }
-  .cardWrap:hover{
+  .cardWrap:hover {
     background-color: rgb(174, 174, 174, 0.3);
   }
-  .cardWrap.active{
+  .cardWrap.active {
     background-color: #009ffb2f;
   }
-  .listMethod{
+  .listMethod {
     width: 100%;
-    .btnListFriend, .btnFriendRequest{
-        width: 100% !important;
-        display: flex;
-        align-items: center;
-        font-weight: bold;
-        padding: 4%;
-        height: 8%;
-        cursor: pointer;
+    .btnListFriend,
+    .btnFriendRequest {
+      width: 100% !important;
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      padding: 4%;
+      height: 8%;
+      cursor: pointer;
     }
-    .btnListFriend:hover, .btnFriendRequest:hover{
-        background-color: rgb(174, 174, 174, 0.2);
+    .btnListFriend:hover,
+    .btnFriendRequest:hover {
+      background-color: rgb(174, 174, 174, 0.2);
     }
-    .btnListFriend.action, .btnFriendRequest.action{
-        background-color: #009ffb2f;
+    .btnListFriend.action,
+    .btnFriendRequest.action {
+      background-color: #009ffb2f;
     }
   }
-  .paneMain{
+  .paneMain {
     height: 100%;
     width: 76vw !important;
-    .paneChatMain, .paneFriendMain{
+    .paneChatMain,
+    .paneFriendMain {
       width: 100%;
-      height: 100% ;
+      height: 100%;
     }
   }
-  
 }

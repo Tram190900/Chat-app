@@ -90,7 +90,6 @@ const ChatScreen = () => {
 
   useEffect(() => {
     if (socket === null || selectedChat.members.length <= 0) return;
-    console.log('eeeee');
     socket.on("getMessage", (res) => {
       if (selectedChat._id !== res.chatId) return;
       dispatch(handleSetMessage(res));

@@ -92,7 +92,7 @@ const CardPeople = ({ chat, keyProps }) => {
       />
       <Card.Body className={clsx(Style.cardBody)}>
         <Card.Title className={clsx(Style.cardTitle)}>
-          <p>{userRecipient.name}</p>
+          <p className={clsx(Style.nameReicpient)}>{userRecipient.name}</p>
           <span>
             <p>Time</p>
             {onlineUsers.length > 0 &&
@@ -262,7 +262,10 @@ const PaneListChat = (props) => {
   //   socket.on('getFirstChat',(res)=>{
   //     dispatch(handleNewChat(res.selectedChat))
   //   })
-  // },[socket, listChat.current])
+  //   return(()=>{
+  //     socket.off('getFirstChat')
+  //   })
+  // },[socket])
   return (
     <div className={clsx(Style.listWrap, "col-lg-3 col-sm-0")}>
       <div className={clsx(Style.userWrap)}>
@@ -275,8 +278,8 @@ const PaneListChat = (props) => {
         <InputGroup style={{ width: "90%" }}>
           <Form.Control
             style={{ background: "rgb(174, 174, 174, 0.2)" }}
-            placeholder="Username"
-            aria-label="Username"
+            placeholder="User Name"
+            aria-label="User Name"
             aria-describedby="basic-addon1"
             value={inputUserName}
             onChange={(e) => {
@@ -407,9 +410,21 @@ export default function LayoutChat() {
     socket.on("getOnlineUser", (res) => {
       dispatch(handleGetOnlineUsers(res));
     });
-
+    socket.on("getFirstChat", (res) => {
+      dispatch(handleNewChat(res.newChat));
+    });
+    socket.on("getRequest", (res) => {
+      dispatch(handleGetRequest(res));
+    });
+    socket.on("getAcceptRequest", (res) => {
+      if (res.status === 200) {
+        dispatch(getFriends(`${baseUrlApi}/user/${user._id}/friends`));
+      }
+    });
     return () => {
       socket.off("getOnlineUser");
+      socket.off("getFirstChat");
+      socket.off("getRequest");
     };
   }, [socket]);
 
