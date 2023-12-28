@@ -1,0 +1,43 @@
+.listWrap {
+    width: 100%;
+    max-height: 100vh;
+    .userWrap {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem 0;
+      height: 40vh;
+      .imageWrap {
+        width: 50%;
+        height: 50%;
+        background-color: red;
+        margin-bottom: 1.5rem;
+      }
+      p {
+        font-size: 20px;
+        font-weight: bold;
+      }
+    }
+    .lstFriendWrap {
+      overflow-x: auto;
+      height: 55vh;
+    }
+    .lstFriendWrap::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .lstFriendWrap::-webkit-scrollbar-thumb {
+      border-radius: 5px;
+      -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+      background: rgba(0, 0, 0, 0.2);
+    }
+  }
+  .paneListChat,
+  .paneListFriend {
+    display: none;
+  }
+  .paneListChat.active,
+  .paneListFriend.active {
+    display: block;
+  }
