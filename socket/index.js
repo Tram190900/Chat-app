@@ -16,9 +16,9 @@ io.on("connection", (socket) => {
       io.emit('getOnlineUser', onlineUser)
     })
 
-  socket.on('disconnet',()=>{
+  socket.on('disconnect',()=>{
     onlineUser = onlineUser.filter(user=> user.socketId !== socket.id)
-    console.log('disconnet',onlineUser);
+    console.log('disconnect',onlineUser);
     io.emit('getOnlineUser', onlineUser)
   })
 

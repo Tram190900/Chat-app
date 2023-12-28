@@ -25,9 +25,9 @@ import FriendScreen from "./../../View/FriendScreen/index";
 import { selectActive } from "../../features/ActivePane/ActivePaneSlice";
 import {
   getMessage,
-  handleClearNotification,
   handleSetNotification,
   handleSetNotificationRead,
+  handleUpdateNotification,
 } from "../../features/Message/messageSlide";
 import { connectSocket, socket } from "../../socket";
 import {
@@ -51,7 +51,6 @@ const CardPeople = ({ chat, keyProps }) => {
   const selectedChat = useSelector((state) => state.chat.selectedChat);
   const onlineUsers = useSelector((state) => state.user.onlineUsers);
   const newMessage = useSelector((state) => state.message.newMessage);
-  const currentMessage = useSelector((state) => state.message.currentMessage);
   const [lastMessage, setLastMessage] = useState("");
   const [lastTime, setLastTime] = useState("");
   const notification = useSelector((state) => state.message.notification);
@@ -69,32 +68,41 @@ const CardPeople = ({ chat, keyProps }) => {
       });
   }, []);
 
-  useEffect(() => {
-    const userId = JSON.parse(localStorage.getItem("user"))._id;
-    getMessageRequest(`${baseUrlApi}/message/${chat._id}`)
-      .then((result) => {
-        const last = result.data[result.data?.length - 1];
-        if (last.senderId === userId) {
-          setLastMessage(`You: ${last.text}`);
-        } else {
-          setLastMessage(last.text);
+  useEffect( () => {
+    const getLastMessage = async()=>{
+      const userId = JSON.parse(localStorage.getItem("user"))._id;
+      await getMessageRequest(`${baseUrlApi}/message/${chat._id}`)
+        .then((result) => {
+          const last = result.data[result.data?.length - 1];
+          if (last.senderId === userId) {
+            setLastMessage(`You: ${last.text}`);
+          }else{
+            setLastMessage(last.text)
+          }
+          setLastTime(last.createdAt);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+      await socket.on("getMessage", (res) => {
+        if (res.chatId === chat._id) {
+          setLastMessage(res.text);
         }
-        setLastTime(last.createdAt);
-      })
-      .catch((err) => {
-        console.log(err);
       });
-  }, [newMessage, currentMessage]);
+      return(()=>{
+        socket.off('getMessage')
+      })
+    }
+    getLastMessage()
+  }, [newMessage, socket, selectedChat]);
 
   useEffect(() => {
-    console.log(notification);
-      const userId = JSON.parse(localStorage.getItem("user"))._id;
-      const userRevicerId = chat.members.find((id) => id !== userId);
-      const noti = notification.filter(
-        (item) => item.senderId === userRevicerId && item.isRead === false
-      );
-      setCount(noti.length);
-    
+    const userId = JSON.parse(localStorage.getItem("user"))._id;
+    const userRevicerId = chat.members.find((id) => id !== userId);
+    const noti = notification.filter(
+      (item) => item.senderId === userRevicerId && item.isRead === false
+    );
+    setCount(noti.length);
   }, [notification]);
 
   const handleSelected = async (id) => {
@@ -116,6 +124,9 @@ const CardPeople = ({ chat, keyProps }) => {
       )}
       onClick={() => {
         handleSelected(chat._id);
+        if(notification.length>0){
+          dispatch(handleUpdateNotification(userRecipient._id))
+        }
       }}
     >
       <Card.Img
@@ -131,7 +142,7 @@ const CardPeople = ({ chat, keyProps }) => {
       <Card.Body className={clsx(Style.cardBody)}>
         <Card.Title className={clsx(Style.cardTitle)}>
           <p className={clsx(Style.nameReicpient)}>{userRecipient.name}</p>
-          <p className={clsx(Style.lastTime)}>{moment(lastTime).calendar()}</p>
+          <p className={clsx(Style.lastTime)}>{moment(lastTime).fromNow()}</p>
         </Card.Title>
         <Card.Text className={clsx(Style.shortMessage)}>
           {lastMessage}
@@ -147,7 +158,6 @@ const CardSearchUser = ({ user }) => {
   const sendRequest = useSelector((state) => state.friendRequest.sendedRequest);
   const isFriend = friends.some((friend) => friend._id === user._id);
   const [wasSender, setWasSender] = useState(false);
-  const dispatch = useDispatch();
   const wasSendRequest = sendRequest.some(
     (item) => item.recipient._id === user._id
   );
@@ -285,15 +295,6 @@ const PaneListChat = (props) => {
     handleGetListChat(rs._id);
   }, [props.active]);
 
-  // useEffect(()=>{
-  //   if(socket===null) return
-  //   socket.on('getFirstChat',(res)=>{
-  //     dispatch(handleNewChat(res.selectedChat))
-  //   })
-  //   return(()=>{
-  //     socket.off('getFirstChat')
-  //   })
-  // },[socket])
   return (
     <div className={clsx(Style.listWrap, "col-lg-3 col-sm-0")}>
       <div className={clsx(Style.userWrap)}>
@@ -465,7 +466,6 @@ export default function LayoutChat() {
       if (isChatOpen) {
         dispatch(handleSetNotificationRead(res));
       } else {
-        console.log("false");
         dispatch(handleSetNotification(res));
       }
     });
@@ -476,7 +476,7 @@ export default function LayoutChat() {
 
   const handleLogOut = () => {
     localStorage.removeItem("user");
-    socket.emit("disconnet");
+    socket.emit("disconnect");
     socket.disconnect();
     navigate("/chat-app/login");
   };

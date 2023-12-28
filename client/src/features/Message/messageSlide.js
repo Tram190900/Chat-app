@@ -11,43 +11,64 @@ export const getMessage = createAsyncThunk(
     }
   }
 );
-export const sendMessage = createAsyncThunk('message/sendMessage', async({url, data})=>{
-  try {
-    const newMessage = await postMessageRequest(url, data)
-    return newMessage.data
-  } catch (error) {
-    throw error
+export const sendMessage = createAsyncThunk(
+  "message/sendMessage",
+  async ({ url, data }) => {
+    try {
+      const newMessage = await postMessageRequest(url, data);
+      return newMessage.data;
+    } catch (error) {
+      throw error;
+    }
   }
-})
+);
 
 const messageSlide = createSlice({
   name: "message",
   initialState: {
-    currenMessage: null,
+    currenMessage: [],
     newMessage: null,
-    notification:[]
+    notification: [],
   },
   reducers: {
     handleSetMessage: (state, action) => {
       state.currenMessage = [...state.currenMessage, action.payload];
     },
-    handleSetNotificationRead:(state,action)=>{
-      state.notification=[{...action.payload, isRead: true},...state.notification]
+    handleSetNotificationRead: (state, action) => {
+      state.notification = [
+        { ...action.payload, isRead: true },
+        ...state.notification,
+      ];
     },
-    handleSetNotification:(state, action)=>{
-      state.notification = [action.payload, ...state.notification]
+    handleSetNotification: (state, action) => {
+      state.notification = [action.payload, ...state.notification];
+    },
+    handleUpdateNotification: (state, action) => {
+      state.notification = state.notification.map(item =>{
+        if(item.senderId === action.payload){
+          return {...item, isRead: true}
+        }else{
+          return item
+        }
+      })
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(getMessage.fulfilled, (state, action) => {
-      state.currenMessage = action.payload;
-    })
-    .addCase(sendMessage.fulfilled, (state, action)=>{
-      state.newMessage = action.payload
-      state.currenMessage = [...state.currenMessage, action.payload]
-    });
+    builder
+      .addCase(getMessage.fulfilled, (state, action) => {
+        state.currenMessage = action.payload;
+      })
+      .addCase(sendMessage.fulfilled, (state, action) => {
+        state.newMessage = action.payload;
+        state.currenMessage = [...state.currenMessage, action.payload];
+      });
   },
 });
 const { actions, reducer } = messageSlide;
-export const {handleSetMessage, handleSetNotificationRead, handleSetNotification, handleClearNotification} = actions
+export const {
+  handleSetMessage,
+  handleSetNotificationRead,
+  handleSetNotification,
+  handleUpdateNotification,
+} = actions;
 export default reducer;
