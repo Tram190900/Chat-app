@@ -24,11 +24,18 @@ const messageSlide = createSlice({
   name: "message",
   initialState: {
     currenMessage: null,
-    newMessage: null
+    newMessage: null,
+    notification:[]
   },
   reducers: {
     handleSetMessage: (state, action) => {
       state.currenMessage = [...state.currenMessage, action.payload];
+    },
+    handleSetNotificationRead:(state,action)=>{
+      state.notification=[{...action.payload, isRead: true},...state.notification]
+    },
+    handleSetNotification:(state, action)=>{
+      state.notification = [action.payload, ...state.notification]
     },
   },
   extraReducers: (builder) => {
@@ -42,5 +49,5 @@ const messageSlide = createSlice({
   },
 });
 const { actions, reducer } = messageSlide;
-export const {handleSetMessage} = actions
+export const {handleSetMessage, handleSetNotificationRead, handleSetNotification, handleClearNotification} = actions
 export default reducer;

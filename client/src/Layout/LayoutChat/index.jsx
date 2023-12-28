@@ -10,15 +10,7 @@ import {
   MdOutlineCancelScheduleSend,
   MdPersonAddDisabled,
 } from "react-icons/md";
-import {
-  Button,
-  Card,
-  Form,
-  Image,
-  InputGroup,
-  Modal,
-  ToastContainer,
-} from "react-bootstrap";
+import { Button, Card, Form, Image, InputGroup, Modal } from "react-bootstrap";
 import {
   getChatByUser,
   handleNewChat,
@@ -31,28 +23,39 @@ import { AiOutlineUserAdd } from "react-icons/ai";
 import ChatScreen from "../../View/ChatScreen/index";
 import FriendScreen from "./../../View/FriendScreen/index";
 import { selectActive } from "../../features/ActivePane/ActivePaneSlice";
-import { getMessage } from "../../features/Message/messageSlide";
+import {
+  getMessage,
+  handleClearNotification,
+  handleSetNotification,
+  handleSetNotificationRead,
+} from "../../features/Message/messageSlide";
 import { connectSocket, socket } from "../../socket";
 import {
   getFriends,
   handleGetOnlineUsers,
 } from "../../features/User/userSlice";
 import imageNotFound from "../../image/notFound.jpg";
-import { unwrapResult } from "@reduxjs/toolkit";
 import { postFriendRequest } from "../../api/friendRequestAPI";
 import Swal from "sweetalert2";
 import {
   getFriendRequestByRecipient,
   getFriendRequestBySender,
   handleGetRequest,
-  handleNewRequest,
 } from "../../features/FriendRequest/friendRequest";
+import { getMessageRequest } from "../../api/messageAPI";
+import moment from "moment";
 
 const CardPeople = ({ chat, keyProps }) => {
   const [userRecipient, setUserRecipient] = useState({});
   const dispatch = useDispatch();
   const selectedChat = useSelector((state) => state.chat.selectedChat);
   const onlineUsers = useSelector((state) => state.user.onlineUsers);
+  const newMessage = useSelector((state) => state.message.newMessage);
+  const currentMessage = useSelector((state) => state.message.currentMessage);
+  const [lastMessage, setLastMessage] = useState("");
+  const [lastTime, setLastTime] = useState("");
+  const notification = useSelector((state) => state.message.notification);
+  const [count, setCount] = useState(null);
 
   useEffect(() => {
     const userId = JSON.parse(localStorage.getItem("user"))._id;
@@ -65,6 +68,35 @@ const CardPeople = ({ chat, keyProps }) => {
         console.log(err);
       });
   }, []);
+
+  useEffect(() => {
+    const userId = JSON.parse(localStorage.getItem("user"))._id;
+    getMessageRequest(`${baseUrlApi}/message/${chat._id}`)
+      .then((result) => {
+        const last = result.data[result.data?.length - 1];
+        if (last.senderId === userId) {
+          setLastMessage(`You: ${last.text}`);
+        } else {
+          setLastMessage(last.text);
+        }
+        setLastTime(last.createdAt);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [newMessage, currentMessage]);
+
+  useEffect(() => {
+    console.log(notification);
+      const userId = JSON.parse(localStorage.getItem("user"))._id;
+      const userRevicerId = chat.members.find((id) => id !== userId);
+      const noti = notification.filter(
+        (item) => item.senderId === userRevicerId && item.isRead === false
+      );
+      setCount(noti.length);
+    
+  }, [notification]);
+
   const handleSelected = async (id) => {
     try {
       const rs = await dispatch(
@@ -90,25 +122,21 @@ const CardPeople = ({ chat, keyProps }) => {
         className={clsx(Style.cardImage)}
         src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png"
       />
+      {onlineUsers.length > 0 &&
+        onlineUsers.map((item, index) => {
+          if (item.userId === userRecipient._id) {
+            return <div key={index} className={clsx(Style.onlineDot)}></div>;
+          }
+        })}
       <Card.Body className={clsx(Style.cardBody)}>
         <Card.Title className={clsx(Style.cardTitle)}>
           <p className={clsx(Style.nameReicpient)}>{userRecipient.name}</p>
-          <span>
-            <p>Time</p>
-            {onlineUsers.length > 0 &&
-              onlineUsers.map((item, index) => {
-                if (item.userId === userRecipient._id) {
-                  return (
-                    <div key={index} className={clsx(Style.onlineDot)}></div>
-                  );
-                }
-              })}
-          </span>
+          <p className={clsx(Style.lastTime)}>{moment(lastTime).calendar()}</p>
         </Card.Title>
         <Card.Text className={clsx(Style.shortMessage)}>
-          Some quick example text to build on the card title and make up the
-          bulk of the card's content.
+          {lastMessage}
         </Card.Text>
+        {count > 0 ? <div className={clsx(Style.notifi)}>{count}</div> : null}
       </Card.Body>
     </Card>
   );
@@ -367,6 +395,7 @@ export default function LayoutChat() {
   const dispatch = useDispatch();
   const active = useSelector((state) => state.activePane.active);
   const user = JSON.parse(localStorage.getItem("user"));
+  const selectedChat = useSelector((state) => state.chat.selectedChat);
 
   const [activeFriend, setActiveFriend] = useState("FriendsList");
 
@@ -427,6 +456,23 @@ export default function LayoutChat() {
       socket.off("getRequest");
     };
   }, [socket]);
+
+  useEffect(() => {
+    socket.on("getNotification", (res) => {
+      const isChatOpen = selectedChat?.members.some(
+        (id) => id === res.senderId
+      );
+      if (isChatOpen) {
+        dispatch(handleSetNotificationRead(res));
+      } else {
+        console.log("false");
+        dispatch(handleSetNotification(res));
+      }
+    });
+    return () => {
+      socket.off("getNotification");
+    };
+  }, [socket, selectedChat]);
 
   const handleLogOut = () => {
     localStorage.removeItem("user");

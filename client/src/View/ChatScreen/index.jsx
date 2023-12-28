@@ -15,6 +15,8 @@ import welcome from "./../../image/welcome_v2.jpg";
 import { useFetchRecipientUser } from "../../utils/user";
 import {
   handleSetMessage,
+  handleSetNotification,
+  handleSetNotificationRead,
   sendMessage,
 } from "../../features/Message/messageSlide";
 import moment from "moment";
