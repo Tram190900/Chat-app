@@ -1,8 +1,8 @@
 import clsx from "clsx";
-import React, { Component, useEffect, useState } from "react";
+import React, { useState } from "react";
 import Style from "./SignUp.module.scss";
 import { Button, Card, Form } from "react-bootstrap";
-import { baseUrlApi, postUserRequest } from "../../api/userAPI";
+import { baseUrlApi, postUserRequestNoneToken } from "../../api/userAPI";
 import { useNavigate } from "react-router-dom";
 import ModalErr from "../Modals/ModalErr";
 import { PiArrowLeftBold } from "react-icons/pi";
@@ -22,10 +22,11 @@ export default function SignUp() {
       password: password,
     };
     try {
-      await postUserRequest(`${baseUrlApi}/user/register`,data)
+      await postUserRequestNoneToken(`${baseUrlApi}/user/register`,data)
       navigate('/chat-app/login')
     } catch (error) {
-      setMessageErr(error.response.data)
+      console.log(error);
+      setMessageErr(error.response)
       setOpenModal(true)
     }
     // await postRequest(`${baseUrlApi}/user/register`,data)

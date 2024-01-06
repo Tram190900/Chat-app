@@ -49,7 +49,7 @@ const Login = () => {
               <h2>Login</h2>
               <Form>
                 <Form.Control
-                  placeholder="Username"
+                  placeholder="Email"
                   type="text"
                   id="txtUsername"
                   onChange={(e) => setEmail(e.target.value)}
