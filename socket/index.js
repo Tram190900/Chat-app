@@ -18,8 +18,8 @@ io.on("connection", (socket) => {
 
   socket.on('logOut',()=>{
     onlineUser = onlineUser.filter(user=> user.socketId !== socket.id)
-    console.log('logOut',onlineUser);
     io.emit('getOnlineUser', onlineUser)
+    console.log('logOut',onlineUser);
   })
 
   socket.on('sendMessage', (message)=>{

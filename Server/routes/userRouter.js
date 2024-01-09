@@ -7,5 +7,6 @@ router.post('/login', userController.loginUser)
 router.get('/find/:userId', userController.userProtect ,userController.findUser)
 router.get('/:userId/friends', userController.userProtect ,userController.getFriends)
 router.get('/findByName/:name', userController.userProtect, userController.findUserByName)
+router.get('/findByPhone/:phoneNumber', userController.userProtect, userController.findUserByPhone)
 
 module.exports = router
