@@ -74,7 +74,7 @@ export default function LayoutChat() {
     if (!socket) {
       connectSocket(user._id);
     }
-  }, [user]);
+  }, [socket]);
 
   useEffect(() => {
     if (socket == null) return;

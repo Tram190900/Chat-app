@@ -1,0 +1,49 @@
+.listWrap{
+    margin-top: 5%;
+    .listFriend{
+        height: 50vh;
+        .card{
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border: 2rem;
+            padding: 3%;
+            border-radius: 0.7rem;
+            .imageWrap{
+                width: 3rem;
+                background-color: rgb(174, 174, 174, 0.3);
+                margin: 0 5%;
+            }
+
+        }
+        .card:hover{
+            background-color: rgb(174, 174, 174, 0.2);
+        }
+    }
+    .listSelect{
+        border: 1px solid rgba(128, 124, 124, 0.25);
+        border-radius: 1rem;
+        padding: 2%;
+        .card{
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border: 2rem;
+            padding: 3%;
+            border-radius: 0.7rem;
+            background-color: rgb(174, 174, 174, 0.2);
+            margin-bottom: 3%;
+            span{
+                display: flex;
+                width: 90%;
+                align-items: self-end;
+            }
+            .imageWrap{
+                width: 3rem;
+                background-color: rgb(174, 174, 174, 0.3);
+                margin: 0 5%;
+            }
+            
+        }
+    }
+}

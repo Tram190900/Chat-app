@@ -12,7 +12,7 @@ import { getUser } from "../../features/User/userSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [messageErr, setMessageErr] = useState("");
@@ -22,7 +22,7 @@ const Login = () => {
   
   const handleLogin = async () => {
     const data = {
-      email: email,
+      phoneNumber: phone,
       password: password,
     };
     try {
@@ -49,10 +49,10 @@ const Login = () => {
               <h2>Login</h2>
               <Form>
                 <Form.Control
-                  placeholder="Email"
+                  placeholder="Phone number"
                   type="text"
                   id="txtUsername"
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => setPhone(e.target.value)}
                 />
                 <br />
                 <Form.Control

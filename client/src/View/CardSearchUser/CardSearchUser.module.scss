@@ -13,7 +13,7 @@
       width: 70px;
       height: 70px;
       border-radius: 40px;
-      background-color: pink;
+      background-color: rgb(174, 174, 174, 0.3);
       position: relative;
     }
 
@@ -46,6 +46,14 @@
           margin-right: 10px;
           font-size: 13px;
           color: rgb(174, 174, 174);
+        }
+        span {
+          p {
+            &:nth-child(2) {
+              font-size: 15px;
+              color: rgb(174, 174, 174);
+            }
+          }
         }
         
       }

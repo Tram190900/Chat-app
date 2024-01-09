@@ -13,6 +13,9 @@ export default function SignUp() {
   const [password, setPassword] = useState("");
   const [messageErr, setMessageErr] = useState("");
   const [openModal, setOpenModal] = useState(false);
+  const [gender, setGender] = useState(false);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async () => {
@@ -20,26 +23,26 @@ export default function SignUp() {
       name: name,
       email: email,
       password: password,
+      phoneNumber: phoneNumber,
+      gender: gender,
+      dateOfBirth: dateOfBirth,
     };
     try {
-      await postUserRequestNoneToken(`${baseUrlApi}/user/register`,data)
-      navigate('/chat-app/login')
+      await postUserRequestNoneToken(`${baseUrlApi}/user/register`, data)
+        .then((result) => {
+          if (result.status === 200) {
+            navigate("/chat-app/login");
+          }
+        })
+        .catch((err) => {
+          setMessageErr(err.response.data);
+          setOpenModal(true);
+        });
     } catch (error) {
       console.log(error);
-      setMessageErr(error.response)
-      setOpenModal(true)
+      setMessageErr(error.response);
+      setOpenModal(true);
     }
-    // await postRequest(`${baseUrlApi}/user/register`,data)
-    // .then((result) => {
-    //   if(result.status===400){
-    //     setMessageErr(result.data)
-    //     setOpenModal(true)
-    //   }else{
-    //     navigate('/chat-app/login')
-    //   }
-    // }).catch((err) => {
-    //   console.log(err);
-    // });;
   };
   return (
     <>
@@ -62,6 +65,7 @@ export default function SignUp() {
                   placeholder="Username"
                   type="text"
                   id="txtUsername"
+                  value={name}
                   onChange={(e) => {
                     setName(e.target.value);
                   }}
@@ -71,8 +75,51 @@ export default function SignUp() {
                   placeholder="Email"
                   type="email"
                   id="txtUsername"
+                  value={email}
                   onChange={(e) => {
                     setEmail(e.target.value);
+                  }}
+                />
+                <br />
+                <Form.Control
+                  placeholder="Phone Number"
+                  type="text"
+                  id="txtUsername"
+                  value={phoneNumber}
+                  onChange={(e) => {
+                    setPhoneNumber(e.target.value);
+                  }}
+                />
+                <br />
+                <Form>
+                  <Form.Check
+                    inline
+                    label="Female"
+                    name="gender"
+                    type="radio"
+                    defaultChecked
+                    onClick={() => {
+                      setGender(false);
+                    }}
+                  />
+                  <Form.Check
+                    inline
+                    label="Male"
+                    type="radio"
+                    name="gender"
+                    onClick={() => {
+                      setGender(true);
+                    }}
+                  />
+                </Form>
+                <br />
+                <Form.Control
+                  placeholder="Phone Number"
+                  type="date"
+                  id="txtUsername"
+                  value={dateOfBirth}
+                  onChange={(e) => {
+                    setDateOfBirth(e.target.value);
                   }}
                 />
                 <br />
