@@ -10,6 +10,7 @@ import ModalErr from "../Modals/ModalErr";
 import {useDispatch} from 'react-redux'
 import { getUser } from "../../features/User/userSlice";
 import { unwrapResult } from "@reduxjs/toolkit";
+import { connectSocket, socket } from "../../socket";
 
 const Login = () => {
   const [phone, setPhone] = useState("");

@@ -40,21 +40,6 @@ const userSlice = createSlice({
   },
   
   reducers: {
-    // handleSocket:(state)=>{
-    //   const newSocket = io("http://localhost:9000");
-    //   state.socket= newSocket
-    //   // return()=>{
-    //   //   newSocket.disconnect()
-    //   // }
-    // },
-    // handleOnlineUser:(state, action)=>{
-    //   if(state.socket!==null)
-    //     state.socket.emit('addNewUser', action.payload)
-    //   return
-    // },
-    // handleDisconnectSocket:(state)=>{
-    //   state.socket.disconnect()
-    // }
     handleGetOnlineUsers:(state, action)=>{
       state.onlineUsers = action.payload
     },

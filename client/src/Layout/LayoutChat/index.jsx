@@ -74,7 +74,7 @@ export default function LayoutChat() {
     if (!socket) {
       connectSocket(user._id);
     }
-  }, [socket]);
+  }, [user]);
 
   useEffect(() => {
     if (socket == null) return;
@@ -97,8 +97,9 @@ export default function LayoutChat() {
       socket.off("getOnlineUser");
       socket.off("getFirstChat");
       socket.off("getRequest");
+      socket.off("getAcceptRequest")
     };
-  }, [socket]);
+  }, [socket, user]);
 
   useEffect(() => {
     socket.on("getNotification", (res) => {
