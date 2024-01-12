@@ -96,14 +96,13 @@ const ChatScreen = () => {
   useEffect(() => {
     if (socket === null) return;
     if (selectedChat.members.length <= 0) return;
-    if (message?.length===1){
-      socket.emit('sendFirstChat',{...newMessage, selectedChat})
-    }
     if(message?.length===1 && selectedChat.isGroup){
       socket.emit('groupChat', {...newMessage, selectedChat})
     }
-    const respientId = selectedChat.members.find((id) => id !== user._id);
-    socket.emit("sendMessage", { ...newMessage, respientId });
+    if (message?.length===1 && !selectedChat.isGroup){
+      socket.emit('sendFirstChat',{...newMessage, selectedChat})
+    }
+    socket.emit("sendMessage", { ...newMessage, selectedChat });
   }, [newMessage]);
 
   useEffect(() => {
