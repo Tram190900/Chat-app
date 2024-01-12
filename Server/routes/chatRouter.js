@@ -4,6 +4,7 @@ const userController = require("../app/controllers/UserController");
 const router = express.Router();
 
 router.post("/", userController.userProtect, chatController.createChat);
+router.post("/createGroupChat", userController.userProtect, chatController.createGroupChat)
 router.get(
   "/:userId",
   userController.userProtect,

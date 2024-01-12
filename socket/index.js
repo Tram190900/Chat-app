@@ -47,11 +47,22 @@ io.on("connection", (socket) => {
     }
   })
   socket.on('sendFirstChat', async(message)=>{
+    console.log(me);
     const userRecipient = message.selectedChat.members.find(id=>id!==message.senderId)
     const user = await onlineUser.find(user => user.userId===userRecipient)
     if(user){
       socket.to(user.socketId).emit('getFirstChat', {newChat: message.selectedChat})
     }
+  })
+  socket.on('groupChat', async(message)=>{
+    console.log(message);
+    const userRecipients = message.selectedChat.members.filter(id=>id!==message.senderId)
+    userRecipients.map(async(item)=>{
+      const user = await onlineUser.find(user => user.userId === item)
+      if(user){
+        socket.to(user.socketId).emit('getFirstChat', {newChat: message.selectedChat})
+      }
+    })
   })
 });
 

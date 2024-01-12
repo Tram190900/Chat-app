@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   Col,
@@ -10,13 +10,16 @@ import {
   Row,
 } from "react-bootstrap";
 import Style from "./ModalCreateChatGroup.module.scss";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { IoCloseCircle } from "react-icons/io5";
+import { baseUrlApi, postChatRequest } from "../../api/chatAPI";
+import { handleNewChat } from "../../features/Chat/chatSlice";
 
 function ModalCreateChatGroup(props) {
   const currentFriend = useSelector((state) => state.user.currentFriends);
   const [selectFriends, setSelectFriends] = useState([]);
   const [groupName, setGroupName] = useState("");
+  const dispatch = useDispatch()
 
   const handleSelectFriends = (item) => {
     if (selectFriends.includes(item)) {
@@ -26,6 +29,26 @@ function ModalCreateChatGroup(props) {
       setSelectFriends([...selectFriends, item]);
     }
   };
+  const handleCreateGroup = async ()=>{
+    const memberIds = [JSON.parse(localStorage.getItem("user"))._id]
+    selectFriends.map((item)=>{
+      memberIds.push(item._id)
+    })
+    const data={
+      members: memberIds,
+      isGroup: true,
+      nameGroup: groupName
+    }
+    try {
+      const createGroup = await postChatRequest(`${baseUrlApi}/chat/createGroupChat`,data)
+      if(createGroup.status===200){
+        await dispatch(handleNewChat(createGroup.data))
+        props.onHide()
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   return (
     <Modal
@@ -115,6 +138,9 @@ function ModalCreateChatGroup(props) {
               ? ""
               : "disable"
           }
+          onClick={()=>{
+            handleCreateGroup()
+          }}
         >
           Create
         </Button>

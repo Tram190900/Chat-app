@@ -24,15 +24,7 @@ export const handleSelectedChat = createAsyncThunk(
       throw error.response.data
     }
   }
-);
-export const handleCreateChat=createAsyncThunk('chat/handleCreateChat', async(url, data)=>{
-  try {
-    const createChat = await postChatRequest(url, data)
-    return createChat.data
-  } catch (error) {
-    throw error
-  }
-})
+)
 
 const chatSlice = createSlice({
   name: "chat",
@@ -62,15 +54,7 @@ const chatSlice = createSlice({
       .addCase(handleSelectedChat.fulfilled, (state, action) => {
         state.selectedChat = action.payload;
       })
-      .addCase(handleCreateChat.fulfilled, (state,action)=>{
-        state.current = [...state.current, action.payload]
-      })
   },
-  //  extraReducers:{
-  //     [getChat.fulfilled]:(state, action)=>{
-  //         state.current = action.payload
-  //     }
-  //  }
 });
 const { reducer,actions } = chatSlice;
 export const {handleExitsChat, handleNewChat} =actions

@@ -23,6 +23,7 @@ import moment from "moment";
 import InputEmoji from "react-input-emoji";
 import { socket } from "../../socket";
 import { handleNewChat } from "../../features/Chat/chatSlice";
+import { getUserRequest } from "../../api/userAPI";
 
 const CardRecipient = ({ chat, user }) => {
   const { userRecipient } = useFetchRecipientUser(chat, user);
@@ -35,7 +36,7 @@ const CardRecipient = ({ chat, user }) => {
         src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png"
       />
       <Card.Body className={clsx(Style.cardBody)}>
-        <Card.Title>{userRecipient.name}</Card.Title>
+        <Card.Title>{chat.isGroup?`Grp: ${chat.nameGroup}`:userRecipient.name}</Card.Title>
         <div className={clsx(Style.mediaWrap)}>
           <MdLocalPhone size={35} style={{ marginRight: "20px" }} />
           <MdOutlineVideoCameraFront size={35} />
@@ -57,10 +58,22 @@ const ContentSend = ({ text, time }) => {
   );
 };
 
-const ContentRecipient = ({ text, time }) => {
+const ContentRecipient = ({ text, time, senderId }) => {
+  const [sender, setSender] = useState('')
+  useEffect(()=>{
+    const getRecipient = async ()=>{
+      await getUserRequest(`${baseUrlApi}/user/find/${senderId}`).then((result) => {
+        setSender(result.data.name)
+      }).catch((err) => {
+        console.log(err);
+      });
+    }
+    getRecipient()
+  },[])
   return (
     <div className={clsx(Style.reciverWrap)}>
       {/* <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/User-avatar.svg/1200px-User-avatar.svg.png" /> */}
+      <div className={clsx(Style.reciverImg)}>{sender.charAt(0).toUpperCase()}</div>
       <div>
         <p>
           {text}
@@ -85,6 +98,9 @@ const ChatScreen = () => {
     if (selectedChat.members.length <= 0) return;
     if (message?.length===1){
       socket.emit('sendFirstChat',{...newMessage, selectedChat})
+    }
+    if(message?.length===1 && selectedChat.isGroup){
+      socket.emit('groupChat', {...newMessage, selectedChat})
     }
     const respientId = selectedChat.members.find((id) => id !== user._id);
     socket.emit("sendMessage", { ...newMessage, respientId });
@@ -146,7 +162,7 @@ const ChatScreen = () => {
                     return <ContentRecipient key={index} item={item.content} />;
                   }
                 })} */}
-                {message &&
+                {message?.length>0 &&
                   message.map((item, index) =>
                     item.senderId === user._id ? (
                       <span ref={scrollRef} key={index}>
@@ -160,6 +176,7 @@ const ChatScreen = () => {
                         <ContentRecipient
                           text={item.text}
                           time={item.createdAt}
+                          senderId = {item.senderId}
                         />
                       </span>
                     )

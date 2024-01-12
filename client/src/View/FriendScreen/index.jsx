@@ -2,7 +2,7 @@ import React from "react";
 import Style from "./FriendScreen.module.scss";
 import clsx from "clsx";
 import { baseUrlApi } from "./../../api/userAPI";
-import { getChatRequest, postChatRequest } from "./../../api/chatAPI";
+import { postChatRequest } from "./../../api/chatAPI";
 import { Button, Image } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { selectActive } from "../../features/ActivePane/ActivePaneSlice";

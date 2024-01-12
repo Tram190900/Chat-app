@@ -97,12 +97,14 @@
   width: fit-content;
   margin-bottom: 2%;
   width: 100%;
-  img{
-    width: 20px;
-    height: 20px;
+  .reciverImg{
     background-color: #009ffb;
-    border-radius: 10px;
+    border-radius: 20px;
     margin-right: 20px;
+    text-align: center;
+    padding: 3px 10px;
+    font-size: 15px;
+    font-weight: bold;
   }
   div{
     width: fit-content;
